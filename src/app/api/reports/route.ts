@@ -127,420 +127,281 @@ export async function POST(request: NextRequest) {
     const reportNumber = `RPT-${Date.now()}`
     const currentDate = new Date()
 
-    // Create PDF
+    // Create PDF with professional block design
     const pdf = new jsPDF()
     let currentPage = 1
-    let yPos = 30
+    let yPos = 20
 
     // Helper function to check page break
     const checkPageBreak = (requiredSpace: number) => {
       if (yPos + requiredSpace > 270) {
         pdf.addPage()
         currentPage++
-        yPos = 30
+        yPos = 20
         return true
       }
       return false
     }
 
-    // Helper function to add section header
-    const addSectionHeader = (title: string, size: number = 14) => {
-      checkPageBreak(20)
-      pdf.setFontSize(size)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text(title, 20, yPos)
-      yPos += 15
-      pdf.setFont('helvetica', 'normal')
-    }
-
-    // HEADER PAGE
-    pdf.setFontSize(24)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('LAPORAN DIAGNOSA KENDARAAN', 20, 30)
-    pdf.text('AutoDiag Master AI', 20, 45)
-    
-    pdf.setFontSize(12)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text(`Nomor Laporan: ${reportNumber}`, 20, 65)
-    pdf.text(`Tanggal: ${currentDate.toLocaleDateString('id-ID', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    })}`, 20, 75)
-    pdf.text(`Waktu: ${currentDate.toLocaleTimeString('id-ID')}`, 20, 85)
-    pdf.text(`Diagnosis ID: ${diagnosisId}`, 20, 95)
-
-    // Draw line separator
-    pdf.line(20, 105, 190, 105)
-    yPos = 120
-
-    // INFORMASI KENDARAAN
-    addSectionHeader('1. INFORMASI KENDARAAN', 16)
-    
-    const vehicleInfo = [
-      ['Merek', diagnosis.brand],
-      ['Model', diagnosis.model],
-      ['Tahun', diagnosis.year],
-      ['Kode Mesin', diagnosis.engineCode],
-      ['Transmisi', diagnosis.transmission],
-      ['Kilometer', `${diagnosis.mileage.toLocaleString('id-ID')} km`],
-      ['VIN', diagnosis.vin || 'Tidak tersedia']
-    ]
-
-    pdf.setFontSize(10)
-    vehicleInfo.forEach(([label, value]) => {
-      pdf.setFont('helvetica', 'bold')
-      pdf.text(`${label}:`, 25, yPos)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(value, 80, yPos)
-      yPos += 8
-    })
-
-    yPos += 10
-
-    // KELUHAN UTAMA
-    addSectionHeader('2. KELUHAN UTAMA PELANGGAN')
-    pdf.setFontSize(10)
-    const complaintLines = pdf.splitTextToSize(diagnosis.complaint, 165)
-    pdf.text(complaintLines, 25, yPos)
-    yPos += complaintLines.length * 6 + 10
-
-    // GEJALA YANG DIALAMI
-    addSectionHeader('3. GEJALA YANG DIALAMI')
-    pdf.setFontSize(10)
-    
-    const symptomCategories = [
-      ['Suara Anomali', symptoms.sounds],
-      ['Getaran', symptoms.vibrations],
-      ['Bau Tidak Wajar', symptoms.smells],
-      ['Lampu Indikator', symptoms.warningLights],
-      ['Kondisi Munculnya', symptoms.conditions]
-    ]
-
-    symptomCategories.forEach(([category, items]) => {
-      if (items.length > 0 && !items.includes('Tidak ada suara aneh') && !items.includes('Tidak ada getaran') && !items.includes('Tidak ada bau aneh') && !items.includes('Tidak ada lampu menyala')) {
-        checkPageBreak(15)
-        pdf.setFont('helvetica', 'bold')
-        pdf.text(`${category}:`, 25, yPos)
-        yPos += 8
-        pdf.setFont('helvetica', 'normal')
-        items.forEach(item => {
-          checkPageBreak(8)
-          pdf.text(`• ${item}`, 30, yPos)
-          yPos += 6
-        })
-        yPos += 5
-      }
-    })
-
-    // KODE ERROR DTC
-    const errorCodes = JSON.parse(diagnosis.errorCodes || '[]')
-    if (errorCodes.length > 0) {
-      addSectionHeader('4. KODE ERROR DTC')
-      pdf.setFontSize(10)
-      errorCodes.forEach((code: string) => {
-        checkPageBreak(8)
-        pdf.setFont('helvetica', 'bold')
-        pdf.text(`• ${code}`, 25, yPos)
-        pdf.setFont('helvetica', 'normal')
-        yPos += 8
-      })
-      yPos += 10
-    }
-
-    // HASIL ANALISIS AI
-    checkPageBreak(30)
-    addSectionHeader('5. HASIL ANALISIS AI MASTER TECHNICIAN', 16)
-    
-    pdf.setFontSize(12)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text(`Tingkat Kepercayaan AI: ${Math.round(aiAnalysis.confidence * 100)}%`, 25, yPos)
-    yPos += 15
-
-    // PENYEBAB UTAMA
-    addSectionHeader('5.1 PENYEBAB UTAMA')
-    pdf.setFontSize(11)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text(`Komponen: ${aiAnalysis.primaryCause.component}`, 25, yPos)
-    yPos += 8
-    pdf.text(`Probabilitas: ${Math.round(aiAnalysis.primaryCause.probability * 100)}%`, 25, yPos)
-    yPos += 8
-    pdf.text(`Tingkat Kesulitan: ${aiAnalysis.primaryCause.repairComplexity}`, 25, yPos)
-    yPos += 10
-
-    pdf.setFont('helvetica', 'normal')
-    pdf.setFontSize(10)
-    const descLines = pdf.splitTextToSize(aiAnalysis.primaryCause.description, 165)
-    pdf.text(descLines, 25, yPos)
-    yPos += descLines.length * 6 + 10
-
-    // Gejala Terkait
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Gejala Terkait:', 25, yPos)
-    yPos += 8
-    pdf.setFont('helvetica', 'normal')
-    aiAnalysis.primaryCause.symptoms.forEach((symptom: string) => {
-      checkPageBreak(6)
-      pdf.text(`• ${symptom}`, 30, yPos)
-      yPos += 6
-    })
-    yPos += 10
-
-    // Testing Required
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Pengujian yang Diperlukan:', 25, yPos)
-    yPos += 8
-    pdf.setFont('helvetica', 'normal')
-    aiAnalysis.primaryCause.testingRequired.forEach((test: string) => {
-      checkPageBreak(6)
-      pdf.text(`• ${test}`, 30, yPos)
-      yPos += 6
-    })
-    yPos += 15
-
-    // KEMUNGKINAN PENYEBAB LAIN
-    if (aiAnalysis.secondaryCauses && aiAnalysis.secondaryCauses.length > 0) {
-      addSectionHeader('5.2 KEMUNGKINAN PENYEBAB LAIN')
-      pdf.setFontSize(10)
+    // Helper function to add professional block
+    const addBlock = (title: string, content: any, color: [number, number, number] = [59, 130, 246]) => {
+      checkPageBreak(25)
       
-      aiAnalysis.secondaryCauses.forEach((cause: any, index: number) => {
-        checkPageBreak(25)
-        pdf.setFont('helvetica', 'bold')
-        pdf.text(`${index + 1}. ${cause.component} (${Math.round(cause.probability * 100)}%)`, 25, yPos)
-        yPos += 8
-        pdf.setFont('helvetica', 'normal')
-        const causeDesc = pdf.splitTextToSize(cause.description, 160)
-        pdf.text(causeDesc, 30, yPos)
-        yPos += causeDesc.length * 6 + 8
-      })
+      // Block header with gradient effect
+      pdf.setFillColor(color[0], color[1], color[2])
+      pdf.roundedRect(15, yPos, 180, 12, 2, 2, 'F')
+      
+      // Title
+      pdf.setTextColor(255, 255, 255)
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text(title, 20, yPos + 8)
+      
+      yPos += 15
+      
+      // Content area
+      pdf.setFillColor(248, 250, 252)
+      pdf.roundedRect(15, yPos, 180, content.height || 20, 2, 2, 'F')
+      
+      // Content
+      pdf.setTextColor(51, 65, 85)
+      pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(9)
+      
+      if (typeof content === 'string') {
+        const lines = pdf.splitTextToSize(content, 170)
+        pdf.text(lines, 20, yPos + 6)
+        yPos += Math.max(lines.length * 4 + 8, 20)
+      } else if (content.type === 'grid') {
+        content.items.forEach((item: any, index: number) => {
+          const xOffset = (index % 2) * 90
+          const yOffset = Math.floor(index / 2) * 12
+          pdf.setFont('helvetica', 'bold')
+          pdf.text(item.label + ':', 20 + xOffset, yPos + 6 + yOffset)
+          pdf.setFont('helvetica', 'normal')
+          pdf.text(item.value, 20 + xOffset + 35, yPos + 6 + yOffset)
+        })
+        yPos += Math.ceil(content.items.length / 2) * 12 + 8
+      } else if (content.type === 'list') {
+        content.items.forEach((item: string, index: number) => {
+          pdf.text(`• ${item}`, 20, yPos + 6 + (index * 4))
+        })
+        yPos += content.items.length * 4 + 8
+      }
+      
+      yPos += 5
+      pdf.setTextColor(0, 0, 0)
     }
 
-    // PENJELASAN TEORI KERJA
-    checkPageBreak(40)
-    addSectionHeader('6. PENJELASAN TEORI KERJA', 16)
-    pdf.setFontSize(10)
-    const theoryLines = pdf.splitTextToSize(aiAnalysis.theoryExplanation, 165)
-    theoryLines.forEach((line: string) => {
-      checkPageBreak(6)
-      pdf.text(line, 25, yPos)
-      yPos += 6
-    })
-    yPos += 15
-
-    // LANGKAH DIAGNOSA
-    checkPageBreak(40)
-    addSectionHeader('7. LANGKAH DIAGNOSA SISTEMATIS', 16)
-    
-    aiAnalysis.diagnosticSteps.forEach((step: any, index: number) => {
+    // Helper function for metrics blocks (3-column layout)
+    const addMetricsRow = (metrics: any[]) => {
       checkPageBreak(35)
       
-      pdf.setFontSize(12)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text(`Langkah ${step.step}: ${step.title}`, 25, yPos)
-      yPos += 10
-      
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'normal')
-      const stepDesc = pdf.splitTextToSize(step.description, 160)
-      pdf.text(stepDesc, 30, yPos)
-      yPos += stepDesc.length * 6 + 5
-      
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Hasil yang Diharapkan:', 30, yPos)
-      yPos += 6
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(step.expectedResult, 35, yPos)
-      yPos += 8
-      
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Tools Diperlukan:', 30, yPos)
-      yPos += 6
-      pdf.setFont('helvetica', 'normal')
-      step.tools.forEach((tool: string) => {
-        pdf.text(`• ${tool}`, 35, yPos)
-        yPos += 5
+      metrics.forEach((metric, index) => {
+        const xPos = 15 + (index * 60)
+        
+        // Metric block
+        pdf.setFillColor(metric.color[0], metric.color[1], metric.color[2])
+        pdf.roundedRect(xPos, yPos, 55, 25, 2, 2, 'F')
+        
+        // Icon area (simulated)
+        pdf.setFillColor(255, 255, 255, 0.2)
+        pdf.circle(xPos + 12, yPos + 8, 4, 'F')
+        
+        // Value
+        pdf.setTextColor(255, 255, 255)
+        pdf.setFontSize(12)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text(metric.value, xPos + 20, yPos + 10)
+        
+        // Label
+        pdf.setFontSize(7)
+        pdf.setFont('helvetica', 'normal')
+        pdf.text(metric.label, xPos + 5, yPos + 20)
       })
       
-      if (step.safetyNotes && step.safetyNotes.length > 0) {
-        yPos += 3
-        pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(200, 0, 0) // Red color for safety
-        pdf.text('⚠ CATATAN KESELAMATAN:', 30, yPos)
-        yPos += 6
-        pdf.setFont('helvetica', 'normal')
-        step.safetyNotes.forEach((note: string) => {
-          pdf.text(`• ${note}`, 35, yPos)
-          yPos += 5
-        })
-        pdf.setTextColor(0, 0, 0) // Reset to black
-      }
-      
-      yPos += 10
-    })
+      yPos += 35
+      pdf.setTextColor(0, 0, 0)
+    }
 
-    // PROSEDUR PERBAIKAN
-    checkPageBreak(40)
-    addSectionHeader('8. PROSEDUR PERBAIKAN DETAIL', 16)
+    // PROFESSIONAL HEADER BLOCK
+    pdf.setFillColor(30, 41, 59) // slate-800
+    pdf.roundedRect(15, yPos, 180, 35, 3, 3, 'F')
     
-    aiAnalysis.repairProcedures.forEach((procedure: any, index: number) => {
-      checkPageBreak(50)
-      
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text(`8.${index + 1} ${procedure.title}`, 25, yPos)
-      yPos += 10
-      
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'normal')
-      const procDesc = pdf.splitTextToSize(procedure.description, 160)
-      pdf.text(procDesc, 30, yPos)
-      yPos += procDesc.length * 6 + 10
-      
-      // Estimasi waktu dan kesulitan
-      pdf.setFont('helvetica', 'bold')
-      pdf.text(`Estimasi Waktu: ${procedure.estimatedTime} menit`, 30, yPos)
-      yPos += 6
-      pdf.text(`Tingkat Kesulitan: ${procedure.difficultyLevel}`, 30, yPos)
-      yPos += 10
-      
-      // Langkah-langkah
-      pdf.text('LANGKAH PERBAIKAN:', 30, yPos)
-      yPos += 8
-      pdf.setFont('helvetica', 'normal')
-      procedure.steps.forEach((step: string, stepIndex: number) => {
-        checkPageBreak(8)
-        pdf.text(`${stepIndex + 1}. ${step}`, 35, yPos)
-        yPos += 6
-      })
-      yPos += 8
-      
-      // Parts yang diperlukan
-      if (procedure.requiredParts && procedure.requiredParts.length > 0) {
-        pdf.setFont('helvetica', 'bold')
-        pdf.text('PARTS DIPERLUKAN:', 30, yPos)
-        yPos += 8
-        pdf.setFont('helvetica', 'normal')
-        procedure.requiredParts.forEach((part: any) => {
-          checkPageBreak(6)
-          pdf.text(`• ${part.name}`, 35, yPos)
-          if (part.partNumber) {
-            pdf.text(`Part #: ${part.partNumber}`, 120, yPos)
-          }
-          yPos += 5
-          pdf.text(`Estimasi Harga: Rp ${part.estimatedPrice.toLocaleString('id-ID')}`, 40, yPos)
-          yPos += 8
-        })
-      }
-      
-      // Tools yang diperlukan
-      if (procedure.requiredTools && procedure.requiredTools.length > 0) {
-        pdf.setFont('helvetica', 'bold')
-        pdf.text('TOOLS DIPERLUKAN:', 30, yPos)
-        yPos += 8
-        pdf.setFont('helvetica', 'normal')
-        procedure.requiredTools.forEach((tool: string) => {
-          checkPageBreak(5)
-          pdf.text(`• ${tool}`, 35, yPos)
-          yPos += 5
-        })
-        yPos += 5
-      }
-      
-      // Safety precautions
-      if (procedure.safetyPrecautions && procedure.safetyPrecautions.length > 0) {
-        pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(200, 0, 0)
-        pdf.text('⚠ PRECAUTIONS KESELAMATAN:', 30, yPos)
-        yPos += 8
-        pdf.setFont('helvetica', 'normal')
-        procedure.safetyPrecautions.forEach((precaution: string) => {
-          checkPageBreak(6)
-          pdf.text(`• ${precaution}`, 35, yPos)
-          yPos += 6
-        })
-        pdf.setTextColor(0, 0, 0)
-        yPos += 5
-      }
-      
-      // Quality checks
-      if (procedure.qualityChecks && procedure.qualityChecks.length > 0) {
-        pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(0, 150, 0)
-        pdf.text('✓ QUALITY CONTROL CHECKS:', 30, yPos)
-        yPos += 8
-        pdf.setFont('helvetica', 'normal')
-        procedure.qualityChecks.forEach((check: string) => {
-          checkPageBreak(6)
-          pdf.text(`• ${check}`, 35, yPos)
-          yPos += 6
-        })
-        pdf.setTextColor(0, 0, 0)
-        yPos += 10
-      }
-    })
-
-    // ESTIMASI BIAYA
-    checkPageBreak(50)
-    addSectionHeader('9. ESTIMASI BIAYA PERBAIKAN', 16)
-    
-    pdf.setFontSize(12)
-    const costData = [
-      ['Biaya Parts', `Rp ${aiAnalysis.estimatedTotalCost.parts.toLocaleString('id-ID')}`],
-      ['Biaya Labor', `Rp ${aiAnalysis.estimatedTotalCost.labor.toLocaleString('id-ID')}`]
-    ]
-    
-    costData.forEach(([label, value]) => {
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(label, 25, yPos)
-      pdf.text(value, 120, yPos)
-      yPos += 10
-    })
-    
-    // Draw line for total
-    pdf.line(25, yPos, 160, yPos)
-    yPos += 10
-    
+    // Logo area (simulated)
+    pdf.setFillColor(59, 130, 246) // blue-600
+    pdf.roundedRect(20, yPos + 5, 25, 25, 2, 2, 'F')
+    pdf.setTextColor(255, 255, 255)
+    pdf.setFontSize(16)
     pdf.setFont('helvetica', 'bold')
-    pdf.setFontSize(14)
-    pdf.text('TOTAL ESTIMASI', 25, yPos)
-    pdf.text(`Rp ${aiAnalysis.estimatedTotalCost.total.toLocaleString('id-ID')}`, 120, yPos)
-    yPos += 15
+    pdf.text('AI', 28, yPos + 20)
     
+    // Title
+    pdf.setFontSize(18)
+    pdf.text('DIAGNOSTIC REPORT', 50, yPos + 15)
     pdf.setFontSize(10)
-    pdf.setFont('helvetica', 'italic')
-    pdf.text('* Estimasi biaya dapat berubah tergantung kondisi aktual dan harga pasar', 25, yPos)
-    yPos += 5
-    pdf.text('* Harga belum termasuk PPN dan biaya tambahan lainnya', 25, yPos)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text('AutoDiag Master AI System', 50, yPos + 25)
+    
+    // Report info
+    pdf.setFontSize(8)
+    pdf.text(`${reportNumber} | ${currentDate.toLocaleDateString('id-ID')} | ID: ${diagnosisId}`, 120, yPos + 30)
+    
+    yPos += 45
 
-    // REKOMENDASI
-    checkPageBreak(30)
-    addSectionHeader('10. REKOMENDASI TEKNISI', 16)
-    pdf.setFontSize(10)
-    pdf.text('1. Lakukan diagnosa sesuai langkah yang telah ditentukan', 25, yPos)
-    yPos += 6
-    pdf.text('2. Pastikan semua safety precautions diikuti dengan ketat', 25, yPos)
-    yPos += 6
-    pdf.text('3. Gunakan parts original atau yang berkualitas setara', 25, yPos)
-    yPos += 6
-    pdf.text('4. Lakukan quality control check setelah perbaikan', 25, yPos)
-    yPos += 6
-    pdf.text('5. Test drive kendaraan sebelum diserahkan ke pelanggan', 25, yPos)
-    yPos += 15
+    // VEHICLE INFO BLOCK
+    addBlock('INFORMASI KENDARAAN', {
+      type: 'grid',
+      items: [
+        { label: 'Merek', value: diagnosis.brand },
+        { label: 'Model', value: diagnosis.model },
+        { label: 'Tahun', value: diagnosis.year },
+        { label: 'Mesin', value: diagnosis.engineCode },
+        { label: 'Transmisi', value: diagnosis.transmission },
+        { label: 'Kilometer', value: `${diagnosis.mileage.toLocaleString('id-ID')} km` }
+      ]
+    }, [34, 197, 94]) // emerald-600
+
+    // AI ANALYSIS METRICS
+    const metrics = [
+      {
+        label: 'AI CONFIDENCE',
+        value: `${Math.round(aiAnalysis.confidence * 100)}%`,
+        color: [59, 130, 246] // blue-600
+      },
+      {
+        label: 'COMPLEXITY',
+        value: aiAnalysis.primaryCause.repairComplexity,
+        color: [245, 101, 101] // red-500
+      },
+      {
+        label: 'TOTAL COST',
+        value: `Rp ${Math.round(aiAnalysis.estimatedTotalCost.total / 1000)}K`,
+        color: [34, 197, 94] // green-500
+      }
+    ]
+    addMetricsRow(metrics)
+
+    // PRIMARY FAULT BLOCK
+    addBlock('PRIMARY FAULT DIAGNOSIS', 
+      `${aiAnalysis.primaryCause.component} (${Math.round(aiAnalysis.primaryCause.probability * 100)}%)\n\n${aiAnalysis.primaryCause.description}`,
+      [220, 38, 127] // pink-600
+    )
+
+    // COMPLAINT & SYMPTOMS BLOCK
+    const allSymptoms = [
+      ...symptoms.sounds.filter(s => !s.includes('Tidak ada')),
+      ...symptoms.vibrations.filter(s => !s.includes('Tidak ada')),
+      ...symptoms.smells.filter(s => !s.includes('Tidak ada')),
+      ...symptoms.warningLights.filter(s => !s.includes('Tidak ada')),
+      ...symptoms.conditions.filter(s => !s.includes('Tidak ada'))
+    ]
+
+    addBlock('KELUHAN & GEJALA', {
+      type: 'list',
+      items: [diagnosis.complaint, ...allSymptoms.slice(0, 6)]
+    }, [168, 85, 247]) // purple-600
+
+    // DTC CODES BLOCK (if any)
+    const errorCodes = JSON.parse(diagnosis.errorCodes || '[]')
+    if (errorCodes.length > 0) {
+      addBlock('KODE ERROR DTC', {
+        type: 'list',
+        items: errorCodes
+      }, [239, 68, 68]) // red-500
+    }
+
+    // DIAGNOSTIC STEPS COMPACT
+    addBlock('LANGKAH DIAGNOSA', {
+      type: 'list',
+      items: aiAnalysis.diagnosticSteps.slice(0, 4).map((step: any) => 
+        `${step.step}. ${step.title}: ${step.expectedResult}`
+      )
+    }, [16, 185, 129]) // green-600
+
+    // REPAIR PROCEDURES COMPACT
+    if (aiAnalysis.repairProcedures && aiAnalysis.repairProcedures.length > 0) {
+      const mainProcedure = aiAnalysis.repairProcedures[0]
+      
+      addBlock('PROSEDUR PERBAIKAN UTAMA', 
+        `${mainProcedure.title}\n\nEstimasi: ${mainProcedure.estimatedTime} menit | Kesulitan: ${mainProcedure.difficultyLevel}\n\nLangkah utama:\n${mainProcedure.steps.slice(0, 3).map((step: string, i: number) => `${i+1}. ${step}`).join('\n')}`,
+        [147, 51, 234] // purple-600
+      )
+
+      // Parts & Tools in compact grid
+      if (mainProcedure.requiredParts && mainProcedure.requiredParts.length > 0) {
+        addBlock('PARTS & TOOLS DIPERLUKAN', {
+          type: 'grid',
+          items: [
+            ...mainProcedure.requiredParts.slice(0, 4).map((part: any) => ({
+              label: part.name,
+              value: `Rp ${part.estimatedPrice.toLocaleString('id-ID')}`
+            })),
+            ...mainProcedure.requiredTools.slice(0, 2).map((tool: string) => ({
+              label: 'Tool',
+              value: tool
+            }))
+          ]
+        }, [245, 158, 11]) // amber-500
+      }
+    }
+
+    // COST ANALYSIS COMPACT
+    const costMetrics = [
+      {
+        label: 'PARTS COST',
+        value: `Rp ${Math.round(aiAnalysis.estimatedTotalCost.parts / 1000)}K`,
+        color: [34, 197, 94] // green-500
+      },
+      {
+        label: 'LABOR COST', 
+        value: `Rp ${Math.round(aiAnalysis.estimatedTotalCost.labor / 1000)}K`,
+        color: [59, 130, 246] // blue-500
+      },
+      {
+        label: 'TOTAL ESTIMATE',
+        value: `Rp ${Math.round(aiAnalysis.estimatedTotalCost.total / 1000)}K`,
+        color: [239, 68, 68] // red-500
+      }
+    ]
+    addMetricsRow(costMetrics)
+
+    // SECONDARY CAUSES COMPACT
+    if (aiAnalysis.secondaryCauses && aiAnalysis.secondaryCauses.length > 0) {
+      addBlock('KEMUNGKINAN PENYEBAB LAIN', {
+        type: 'list',
+        items: aiAnalysis.secondaryCauses.slice(0, 3).map((cause: any) => 
+          `${cause.component} (${Math.round(cause.probability * 100)}%) - ${cause.description.substring(0, 80)}...`
+        )
+      }, [251, 146, 60]) // orange-500
+    }
+
+    // RECOMMENDATIONS BLOCK
+    addBlock('REKOMENDASI TEKNISI', {
+      type: 'list',
+      items: [
+        'Lakukan diagnosa sesuai langkah yang telah ditentukan',
+        'Pastikan semua safety precautions diikuti dengan ketat',
+        'Gunakan parts original atau yang berkualitas setara',
+        'Lakukan quality control check setelah perbaikan',
+        'Test drive kendaraan sebelum diserahkan ke pelanggan'
+      ]
+    }, [16, 185, 129]) // green-600
 
     // FOOTER pada setiap halaman
     const totalPages = pdf.getNumberOfPages()
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i)
       
-      // Footer line
-      pdf.line(20, 275, 190, 275)
+      // Professional footer
+      pdf.setFillColor(248, 250, 252)
+      pdf.rect(15, 275, 180, 15, 'F')
       
-      pdf.setFontSize(8)
+      pdf.setFontSize(7)
       pdf.setFont('helvetica', 'normal')
-      pdf.text('AutoDiag Master AI - Sistem Diagnosa Otomotif Berbasis Artificial Intelligence', 20, 285)
-      pdf.text(`Laporan ini dihasilkan secara otomatis | Halaman ${i} dari ${totalPages}`, 20, 292)
-      pdf.text(`Dicetak pada: ${currentDate.toLocaleString('id-ID')}`, 130, 292)
+      pdf.setTextColor(100, 116, 139)
+      pdf.text('AutoDiag Master AI - Sistem Diagnosa Otomotif Berbasis Artificial Intelligence', 20, 283)
+      pdf.text(`${currentDate.toLocaleDateString('id-ID')} | Halaman ${i}/${totalPages} | ${reportNumber}`, 20, 288)
     }
 
     // Save report to database
