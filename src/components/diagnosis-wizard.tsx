@@ -203,6 +203,10 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
   const [models, setModels] = useState<string[]>([])
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null)
+  
+  // Custom input state
+  const [customBrand, setCustomBrand] = useState('')
+  const [customModel, setCustomModel] = useState('')
 
   // Load brands on mount
   useEffect(() => {
@@ -298,7 +302,14 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
       case 1:
         // Untuk step 1, minimal butuh brand, model, year, transmission, dan mileage
         // Engine code opsional jika tidak ada data engine
-        return data.vehicle.brand && data.vehicle.model && data.vehicle.year &&
+        const hasValidBrand = data.vehicle.brand && 
+          (data.vehicle.brand !== 'LAINNYA' || (data.vehicle.brand === 'LAINNYA' && customBrand.trim().length > 0))
+        
+        const hasValidModel = data.vehicle.model && 
+          (data.vehicle.model !== 'LAINNYA' || (data.vehicle.model === 'LAINNYA' && customModel.trim().length > 0)) ||
+          (data.vehicle.brand === 'LAINNYA' && customModel.trim().length > 0)
+        
+        return hasValidBrand && hasValidModel && data.vehicle.year &&
                data.vehicle.transmission && data.vehicle.mileage > 0
       case 2:
         return data.symptoms.complaint?.trim().length > 0
@@ -347,6 +358,31 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
   }, [data])
 
   const handleNext = async () => {
+    // Jika di step 1, simpan custom brand/model ke data vehicle
+    if (currentStep === 1) {
+      let finalBrand = data.vehicle.brand
+      let finalModel = data.vehicle.model
+      
+      if (data.vehicle.brand === 'LAINNYA' && customBrand.trim()) {
+        finalBrand = customBrand.trim()
+      }
+      
+      if (data.vehicle.model === 'LAINNYA' && customModel.trim()) {
+        finalModel = customModel.trim()
+      } else if (data.vehicle.brand === 'LAINNYA' && customModel.trim()) {
+        finalModel = customModel.trim()
+      }
+      
+      setData(prev => ({
+        ...prev,
+        vehicle: {
+          ...prev.vehicle,
+          brand: finalBrand,
+          model: finalModel
+        }
+      }))
+    }
+    
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1)
     } else {
@@ -405,29 +441,60 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
   }
 
   const handleBrandChange = (brand: string) => {
-    setData(prev => ({
-      ...prev,
-      vehicle: {
-        ...prev.vehicle,
-        brand: brand,
-        model: '',
-        engineCode: '',
-        engineId: ''
-      }
-    }))
+    if (brand === 'LAINNYA') {
+      setData(prev => ({
+        ...prev,
+        vehicle: {
+          ...prev.vehicle,
+          brand: brand,
+          model: '',
+          engineCode: '',
+          engineId: ''
+        }
+      }))
+      setCustomBrand('')
+      setCustomModel('')
+    } else {
+      setData(prev => ({
+        ...prev,
+        vehicle: {
+          ...prev.vehicle,
+          brand: brand,
+          model: '',
+          engineCode: '',
+          engineId: ''
+        }
+      }))
+      setCustomBrand('')
+      setCustomModel('')
+    }
     setSelectedVehicle(null)
   }
 
   const handleModelChange = (model: string) => {
-    setData(prev => ({
-      ...prev,
-      vehicle: {
-        ...prev.vehicle,
-        model: model,
-        engineCode: '',
-        engineId: ''
-      }
-    }))
+    if (model === 'LAINNYA') {
+      setData(prev => ({
+        ...prev,
+        vehicle: {
+          ...prev.vehicle,
+          model: model,
+          engineCode: '',
+          engineId: ''
+        }
+      }))
+      setCustomModel('')
+    } else {
+      setData(prev => ({
+        ...prev,
+        vehicle: {
+          ...prev.vehicle,
+          model: model,
+          engineCode: '',
+          engineId: ''
+        }
+      }))
+      setCustomModel('')
+    }
     setSelectedVehicle(null)
   }
 
@@ -485,12 +552,28 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
                 {brand}
               </SelectItem>
             ))}
+            <SelectItem value="LAINNYA">🔧 Lainnya (Input Manual)</SelectItem>
           </SelectContent>
         </Select>
+        
+        {/* Input Manual Brand */}
+        {data.vehicle.brand === 'LAINNYA' && (
+          <div className="mt-2">
+            <Input
+              placeholder="Masukkan merek kendaraan"
+              value={customBrand}
+              onChange={(e) => setCustomBrand(e.target.value)}
+              className="border-orange-200 focus:border-orange-400"
+            />
+            <p className="text-xs text-slate-500 mt-1">
+              Contoh: BYD, Chery, Geely, dll.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Model Selection */}
-      {data.vehicle.brand && (
+      {(data.vehicle.brand && data.vehicle.brand !== 'LAINNYA') && (
         <div>
           <Label htmlFor="model">Model Kendaraan *</Label>
           <Select value={data.vehicle.model} onValueChange={handleModelChange} disabled={!data.vehicle.brand}>
@@ -508,6 +591,7 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
                       {model}
                     </SelectItem>
                   ))}
+                  <SelectItem value="LAINNYA">🔧 Lainnya (Input Manual)</SelectItem>
                 </>
               ) : (
                 <div className="px-3 py-8 text-center text-sm text-slate-500">
@@ -516,11 +600,44 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
               )}
             </SelectContent>
           </Select>
+          
+          {/* Input Manual Model */}
+          {data.vehicle.model === 'LAINNYA' && (
+            <div className="mt-2">
+              <Input
+                placeholder="Masukkan model kendaraan"
+                value={customModel}
+                onChange={(e) => setCustomModel(e.target.value)}
+                className="border-orange-200 focus:border-orange-400"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                Contoh: Atto 3, Tiggo 7, Coolray, dll.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Model Selection untuk Brand Custom */}
+      {data.vehicle.brand === 'LAINNYA' && customBrand && (
+        <div>
+          <Label htmlFor="customModel">Model Kendaraan *</Label>
+          <Input
+            placeholder="Masukkan model kendaraan"
+            value={customModel}
+            onChange={(e) => setCustomModel(e.target.value)}
+            className="border-orange-200 focus:border-orange-400"
+          />
+          <p className="text-xs text-slate-500 mt-1">
+            Contoh: Atto 3, Tiggo 7, Coolray, dll.
+          </p>
         </div>
       )}
 
       {/* Vehicle Variant Selection */}
-      {data.vehicle.brand && data.vehicle.model && vehicles.length > 0 && (
+      {data.vehicle.brand && data.vehicle.model && 
+       data.vehicle.brand !== 'LAINNYA' && data.vehicle.model !== 'LAINNYA' && 
+       vehicles.length > 0 && (
         <div>
           <Label htmlFor="variant">Varian Kendaraan *</Label>
           <Select value={selectedVehicle?.id || ''} onValueChange={handleVehicleVariantChange}>
@@ -539,6 +656,17 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
             </SelectContent>
           </Select>
         </div>
+      )}
+
+      {/* Alert untuk Custom Input */}
+      {(data.vehicle.brand === 'LAINNYA' || data.vehicle.model === 'LAINNYA') && (
+        <Alert className="border-orange-200 bg-orange-50">
+          <Info className="h-4 w-4 text-orange-600" />
+          <AlertDescription className="text-orange-800">
+            <strong>Input Manual:</strong> Anda sedang memasukkan data kendaraan secara manual. 
+            Pastikan informasi yang dimasukkan akurat untuk hasil diagnosa yang optimal.
+          </AlertDescription>
+        </Alert>
       )}
 
       {/* Year Selection */}
@@ -568,8 +696,9 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
           </div>
         </Label>
         
-        {selectedVehicle && selectedVehicle.engines.length > 0 ? (
-          // Jika ada data engine dari database
+        {selectedVehicle && selectedVehicle.engines.length > 0 && 
+         data.vehicle.brand !== 'LAINNYA' && data.vehicle.model !== 'LAINNYA' ? (
+          // Jika ada data engine dari database dan bukan custom input
           <Select value={data.vehicle.engineCode} onValueChange={handleEngineChange}>
             <SelectTrigger>
               <SelectValue placeholder="Pilih kode mesin" />
@@ -589,14 +718,23 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
             </SelectContent>
           </Select>
         ) : (
-          // Jika tidak ada data engine, input manual
+          // Jika tidak ada data engine atau custom input, gunakan input manual
           <Input
             id="engineCode"
-            placeholder="Contoh: 1NZ-FE, K15B, 4A91"
+            placeholder="Contoh: 1NZ-FE, K15B, 4A91, 2GR-FE"
             value={data.vehicle.engineCode}
             onChange={(e) => setData(prev => ({ ...prev, vehicle: { ...prev.vehicle, engineCode: e.target.value } }))}
+            className={data.vehicle.brand === 'LAINNYA' || data.vehicle.model === 'LAINNYA' ? 
+              "border-orange-200 focus:border-orange-400" : ""}
           />
         )}
+        
+        <p className="text-xs text-slate-500 mt-1">
+          {data.vehicle.brand === 'LAINNYA' || data.vehicle.model === 'LAINNYA' ? 
+            "Masukkan kode mesin sesuai yang tertera di kendaraan" :
+            "Kode mesin membantu AI memberikan diagnosa yang lebih akurat"
+          }
+        </p>
         
         {data.vehicle.engineCode && selectedVehicle && (
           <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -605,10 +743,6 @@ export default function DiagnosisWizard({ onComplete, onCancel }: DiagnosisWizar
             </p>
           </div>
         )}
-        
-        <p className="text-sm text-slate-500 mt-1">
-          Masukkan kode mesin kendaraan (biasanya tertera di engine bay)
-        </p>
       </div>
 
       {/* Transmission */}
