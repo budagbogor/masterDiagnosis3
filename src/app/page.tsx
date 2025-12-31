@@ -22,7 +22,7 @@ import DiagnosisWizard, { DiagnosisData } from '@/components/diagnosis-wizard'
 import DiagnosisResultEnhanced from '@/components/diagnosis-result-enhanced'
 import DiagnosisHistory from '@/components/diagnosis-history'
 import DiagnosisHistoryEnhanced from '@/components/diagnosis-history-enhanced'
-import DTCLibrary from '@/components/dtc-library'
+import DTCLibraryEnhanced from '@/components/dtc-library-enhanced'
 
 type View = 'home' | 'new-diagnosis' | 'history' | 'diagnosis-result' | 'dtc-library'
 
@@ -220,7 +220,7 @@ export default function AutoDiagMasterAI() {
         {currentView === 'new-diagnosis' && renderNewDiagnosisView()}
         {currentView === 'history' && renderHistoryView()}
         {currentView === 'diagnosis-result' && renderDiagnosisResultView()}
-        {currentView === 'dtc-library' && <DTCLibrary />}
+        {currentView === 'dtc-library' && <DTCLibraryEnhanced />}
       </main>
 
       {/* Simple Footer */}

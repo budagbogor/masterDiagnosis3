@@ -10,6 +10,11 @@ export class SupabaseMigration {
     try {
       console.log('🚗 Memulai migrasi data vehicles...')
       
+      if (!supabaseAdmin) {
+        console.warn('⚠️ Supabase tidak dikonfigurasi, skip migrasi vehicles')
+        return
+      }
+      
       // Ambil data dari SQLite
       const vehicles = await prisma.vehicle.findMany()
       
@@ -32,7 +37,7 @@ export class SupabaseMigration {
       }))
       
       // Insert ke Supabase
-      const { data, error } = await supabaseAdmin
+      const { error } = await supabaseAdmin
         .from('vehicles')
         .upsert(supabaseVehicles, { onConflict: 'id' })
       
@@ -42,7 +47,6 @@ export class SupabaseMigration {
       }
       
       console.log(`✅ Berhasil migrasi ${vehicles.length} vehicles ke Supabase`)
-      return data
       
     } catch (error) {
       console.error('❌ Error dalam migrasi vehicles:', error)
@@ -54,6 +58,11 @@ export class SupabaseMigration {
   async migrateDTCCodes() {
     try {
       console.log('🔧 Memulai migrasi data DTC codes...')
+      
+      if (!supabaseAdmin) {
+        console.warn('⚠️ Supabase tidak dikonfigurasi, skip migrasi DTC codes')
+        return
+      }
       
       // Ambil data dari SQLite
       const dtcCodes = await prisma.dTCCode.findMany()
@@ -76,7 +85,7 @@ export class SupabaseMigration {
       }))
       
       // Insert ke Supabase
-      const { data, error } = await supabaseAdmin
+      const { error } = await supabaseAdmin
         .from('dtc_codes')
         .upsert(supabaseDTCCodes, { onConflict: 'id' })
       
@@ -86,7 +95,6 @@ export class SupabaseMigration {
       }
       
       console.log(`✅ Berhasil migrasi ${dtcCodes.length} DTC codes ke Supabase`)
-      return data
       
     } catch (error) {
       console.error('❌ Error dalam migrasi DTC codes:', error)
@@ -98,6 +106,11 @@ export class SupabaseMigration {
   async migrateDiagnosisSessions() {
     try {
       console.log('📊 Memulai migrasi data diagnosis sessions...')
+      
+      if (!supabaseAdmin) {
+        console.warn('⚠️ Supabase tidak dikonfigurasi, skip migrasi diagnosis sessions')
+        return
+      }
       
       // Ambil data dari SQLite
       const sessions = await prisma.diagnosis.findMany()
@@ -125,7 +138,7 @@ export class SupabaseMigration {
       }))
       
       // Insert ke Supabase
-      const { data, error } = await supabaseAdmin
+      const { error } = await supabaseAdmin
         .from('diagnosis_sessions')
         .upsert(supabaseSessions, { onConflict: 'id' })
       
@@ -135,7 +148,6 @@ export class SupabaseMigration {
       }
       
       console.log(`✅ Berhasil migrasi ${sessions.length} diagnosis sessions ke Supabase`)
-      return data
       
     } catch (error) {
       console.error('❌ Error dalam migrasi diagnosis sessions:', error)
@@ -167,7 +179,12 @@ export class SupabaseMigration {
     try {
       console.log('🔍 Testing koneksi Supabase...')
       
-      const { data, error } = await supabaseAdmin
+      if (!supabaseAdmin) {
+        console.warn('⚠️ Supabase tidak dikonfigurasi')
+        return false
+      }
+      
+      const { error } = await supabaseAdmin
         .from('vehicles')
         .select('count')
         .limit(1)
