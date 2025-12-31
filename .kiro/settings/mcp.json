@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=tlyiqancvcqiaawlkzah",
+      "disabled": false,
+      "autoApprove": [
+        "list_tables",
+        "describe_table",
+        "select_data",
+        "insert_data",
+        "update_data",
+        "delete_data",
+        "get_project_url",
+        "apply_migration",
+        "execute_sql"
+      ]
+    }
+  }
+}

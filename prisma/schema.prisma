@@ -1,0 +1,368 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Enums untuk type safety
+enum VehicleType {
+  SEDAN
+  HATCHBACK
+  SUV
+  MPV
+  PICKUP
+  COUPE
+  CONVERTIBLE
+  WAGON
+}
+
+enum FuelType {
+  BENSIN
+  DIESEL
+  HYBRID
+  ELECTRIC
+}
+
+enum AspirationType {
+  NATURAL
+  TURBO
+  SUPERCHARGED
+}
+
+enum TransmissionType {
+  MANUAL
+  AUTOMATIC
+  CVT
+  DCT
+}
+
+enum AutomotiveSystem {
+  ENGINE
+  TRANSMISSION
+  BRAKES
+  SUSPENSION
+  ELECTRICAL
+  FUEL
+  COOLING
+  EXHAUST
+  AIRBAG
+  ABS
+  CLIMATE
+  BODY
+}
+
+enum SeverityLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum SensorType {
+  TEMPERATURE
+  PRESSURE
+  POSITION
+  SPEED
+  FLOW
+  OXYGEN
+  KNOCK
+  MAF
+  MAP
+  TPS
+  CKP
+  CMP
+}
+
+enum ActuatorType {
+  INJECTOR
+  IGNITION_COIL
+  THROTTLE
+  EGR_VALVE
+  FUEL_PUMP
+  FAN
+  SOLENOID
+  MOTOR
+  RELAY
+}
+
+enum DiagnosisStatus {
+  PENDING
+  ANALYZING
+  COMPLETED
+  ERROR
+}
+
+// Model untuk kendaraan Indonesia
+model Vehicle {
+  id            String        @id @default(cuid())
+  brand         String
+  model         String
+  variant       String?
+  years         String        // "2020-2024" format
+  type          VehicleType
+  segment       String?       // A, B, C, D, E, F segments
+  
+  // Relasi dengan engines
+  engines       VehicleEngine[]
+  
+  // Relasi dengan diagnoses
+  diagnoses     Diagnosis[]
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([brand, model])
+  @@index([type])
+  @@index([segment])
+}
+
+// Model untuk mesin
+model Engine {
+  id                String            @id @default(cuid())
+  code              String            @unique
+  brand             String
+  displacement      Int               // dalam CC
+  cylinders         Int
+  fuel              FuelType
+  aspiration        AspirationType
+  power             Int               // dalam HP
+  torque            Int               // dalam Nm
+  commonVehicles    String            // JSON array of vehicle names
+  
+  // Relasi dengan vehicles
+  vehicles          VehicleEngine[]
+  
+  // Maintenance schedule
+  maintenanceItems  String?           // JSON array
+  commonIssues      String?           // JSON array
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([code])
+  @@index([brand])
+  @@index([fuel])
+}
+
+// Junction table untuk many-to-many relationship
+model VehicleEngine {
+  id              String            @id @default(cuid())
+  vehicleId       String
+  engineId        String
+  transmissions   String            // JSON array of transmission types
+  
+  vehicle         Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  engine          Engine            @relation(fields: [engineId], references: [id], onDelete: Cascade)
+  
+  @@unique([vehicleId, engineId])
+  @@index([vehicleId])
+  @@index([engineId])
+}
+
+// Model untuk DTC codes
+model DTCCode {
+  id                    String            @id @default(cuid())
+  code                  String            @unique
+  system                AutomotiveSystem
+  subsystem             String?
+  description           String
+  descriptionIndonesian String
+  severity              SeverityLevel
+  
+  // Symptoms dan causes
+  symptoms              String            // JSON array
+  possibleCauses        String            // JSON array
+  diagnosticSteps       String            // JSON array
+  repairProcedures      String            // JSON array
+  
+  // Relasi dengan sensors dan actuators
+  relatedSensors        DTCSensor[]
+  relatedActuators      DTCActuator[]
+  
+  // Applicable vehicles
+  applicableVehicles    String?           // JSON array of vehicle IDs
+  
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  @@index([code])
+  @@index([system])
+  @@index([severity])
+}
+
+// Model untuk sensors
+model Sensor {
+  id                String            @id @default(cuid())
+  name              String
+  nameIndonesian    String
+  type              SensorType
+  location          String?
+  specifications    String?           // JSON object
+  testingProcedure  String?
+  expectedValues    String?           // JSON array
+  wiringDiagramUrl  String?
+  commonFailures    String?           // JSON array
+  
+  // Relasi dengan DTC codes
+  relatedDTCs       DTCSensor[]
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([name])
+  @@index([type])
+}
+
+// Model untuk actuators
+model Actuator {
+  id                    String            @id @default(cuid())
+  name                  String
+  nameIndonesian        String
+  type                  ActuatorType
+  location              String?
+  specifications        String?           // JSON object
+  testingProcedure      String?
+  operationalParameters String?           // JSON array
+  controlSignals        String?           // JSON array
+  commonFailures        String?           // JSON array
+  
+  // Relasi dengan DTC codes
+  relatedDTCs           DTCActuator[]
+  
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  @@index([name])
+  @@index([type])
+}
+
+// Junction tables untuk DTC relationships
+model DTCSensor {
+  id        String    @id @default(cuid())
+  dtcId     String
+  sensorId  String
+  
+  dtc       DTCCode   @relation(fields: [dtcId], references: [id], onDelete: Cascade)
+  sensor    Sensor    @relation(fields: [sensorId], references: [id], onDelete: Cascade)
+  
+  @@unique([dtcId, sensorId])
+}
+
+model DTCActuator {
+  id          String    @id @default(cuid())
+  dtcId       String
+  actuatorId  String
+  
+  dtc         DTCCode   @relation(fields: [dtcId], references: [id], onDelete: Cascade)
+  actuator    Actuator  @relation(fields: [actuatorId], references: [id], onDelete: Cascade)
+  
+  @@unique([dtcId, actuatorId])
+}
+
+// Enhanced Diagnosis model
+model Diagnosis {
+  id          String          @id @default(cuid())
+  userId      String?         // untuk multi-user support
+  
+  // Vehicle information
+  vehicleId   String?
+  vehicle     Vehicle?        @relation(fields: [vehicleId], references: [id])
+  vin         String?
+  brand       String
+  model       String
+  year        String
+  engineCode  String
+  transmission String
+  mileage     Int
+  
+  // Customer information
+  customerInfo String?        // JSON object
+  
+  // Primary complaint
+  complaint   String
+
+  // Symptoms stored as JSON strings
+  sounds         String       // JSON array
+  vibrations     String       // JSON array
+  smells         String       // JSON array
+  warningLights  String       // JSON array
+  conditions     String       // JSON array
+  additionalNotes String?
+
+  // Service history
+  lastServiceDate String?
+  partsReplaced   String       // JSON array
+  modifications   String       // JSON array
+
+  // Initial checks
+  errorCodes       String?     // JSON array of DTC codes
+  visualInspection String?
+  testDriveNotes   String?
+
+  // Deep dive data (stored as JSON)
+  deepDiveData String?         // JSON object
+
+  // AI Analysis result (stored as JSON)
+  aiAnalysis   String?         // JSON object
+  aiConfidence Float?          // 0.0 to 1.0
+  
+  // Cost estimation
+  estimatedCost String?        // JSON object with cost breakdown
+  
+  // Status tracking
+  status       DiagnosisStatus @default(PENDING)
+  
+  // Reports
+  reports      Report[]
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([brand, model])
+  @@index([vin])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+// Model untuk reports
+model Report {
+  id              String    @id @default(cuid())
+  diagnosisId     String
+  reportNumber    String    @unique
+  customerInfo    String?   // JSON object
+  technicianInfo  String?   // JSON object
+  reportData      String    // JSON object with complete report
+  pdfUrl          String?
+  templateUsed    String?
+  
+  diagnosis       Diagnosis @relation(fields: [diagnosisId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([reportNumber])
+  @@index([diagnosisId])
+  @@index([createdAt])
+}
+
+// Model untuk user management (basic)
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  name        String?
+  role        String    @default("technician") // technician, admin, customer
+  isActive    Boolean   @default(true)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([email])
+  @@index([role])
+}
