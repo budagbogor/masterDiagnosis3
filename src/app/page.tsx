@@ -9,7 +9,8 @@ import {
   History,
   Zap,
   ShieldCheck,
-  Menu
+  Menu,
+  Database
 } from 'lucide-react'
 import {
   Sheet,
@@ -23,8 +24,9 @@ import DiagnosisResultEnhanced from '@/components/diagnosis-result-enhanced'
 import DiagnosisHistory from '@/components/diagnosis-history'
 import DiagnosisHistoryEnhanced from '@/components/diagnosis-history-enhanced'
 import DTCLibraryProfessional from '@/components/dtc-library-professional'
+import OBDIIDTCPage from '@/components/obdii-dtc-page'
 
-type View = 'home' | 'new-diagnosis' | 'history' | 'diagnosis-result' | 'dtc-library'
+type View = 'home' | 'new-diagnosis' | 'history' | 'diagnosis-result' | 'dtc-library' | 'obdii-dtc'
 
 export default function AutoDiagMasterAI() {
   const [currentView, setCurrentView] = useState<View>('home')
@@ -121,6 +123,14 @@ export default function AutoDiagMasterAI() {
               >
                 <BrainCircuit className="w-4 h-4" />
               </Button>
+              <Button
+                size="sm"
+                variant={currentView === 'obdii-dtc' ? 'default' : 'ghost'}
+                onClick={() => setCurrentView('obdii-dtc')}
+                className={currentView === 'obdii-dtc' ? 'bg-blue-600 hover:bg-blue-700' : 'text-slate-600'}
+              >
+                <Database className="w-4 h-4" />
+              </Button>
 
               {/* Mobile Menu */}
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -170,6 +180,14 @@ export default function AutoDiagMasterAI() {
                     >
                       <BrainCircuit className="w-4 h-4 mr-2" />
                       Library DTC
+                    </Button>
+                    <Button
+                      variant={currentView === 'obdii-dtc' ? 'default' : 'outline'}
+                      onClick={() => { setCurrentView('obdii-dtc'); setMobileMenuOpen(false) }}
+                      className="justify-start"
+                    >
+                      <Database className="w-4 h-4 mr-2" />
+                      OBDII.DTC
                     </Button>
                   </nav>
                 </SheetContent>
@@ -221,6 +239,7 @@ export default function AutoDiagMasterAI() {
         {currentView === 'history' && renderHistoryView()}
         {currentView === 'diagnosis-result' && renderDiagnosisResultView()}
         {currentView === 'dtc-library' && <DTCLibraryProfessional />}
+        {currentView === 'obdii-dtc' && <OBDIIDTCPage />}
       </main>
 
       {/* Simple Footer */}
