@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { AIConnectionNotification } from "@/components/ai-connection-notification";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -47,6 +48,7 @@ export default function RootLayout({
       <body className={bodyClassName} suppressHydrationWarning>
         {children}
         <Toaster />
+        <AIConnectionNotification />
       </body>
     </html>
   );

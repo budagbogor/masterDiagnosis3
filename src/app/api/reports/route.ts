@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import jsPDF from 'jspdf'
+import { aiMasterTechnician } from '@/lib/openai'
 
 const prisma = new PrismaClient()
 
@@ -34,8 +35,74 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Parse AI analysis
-    const aiAnalysis = diagnosis.aiAnalysis ? JSON.parse(diagnosis.aiAnalysis) : null
+    // Parse AI analysis - regenerate if needed for dynamic data
+    let aiAnalysis = diagnosis.aiAnalysis ? JSON.parse(diagnosis.aiAnalysis) : null
+
+    // If no AI analysis exists or we want fresh dynamic data, generate new analysis
+    if (!aiAnalysis) {
+      console.log('Generating fresh AI analysis for report...')
+      
+      // Prepare diagnosis data for AI analysis
+      const diagnosisData = {
+        vehicle: {
+          brand: diagnosis.brand,
+          model: diagnosis.model,
+          year: diagnosis.year,
+          engineCode: diagnosis.engineCode,
+          transmission: diagnosis.transmission,
+          mileage: diagnosis.mileage,
+          vin: diagnosis.vin || undefined
+        },
+        symptoms: {
+          complaint: diagnosis.complaint,
+          sounds: JSON.parse(diagnosis.sounds || '[]'),
+          vibrations: JSON.parse(diagnosis.vibrations || '[]'),
+          smells: JSON.parse(diagnosis.smells || '[]'),
+          warningLights: JSON.parse(diagnosis.warningLights || '[]'),
+          conditions: JSON.parse(diagnosis.conditions || '[]'),
+          additionalNotes: diagnosis.additionalNotes || undefined
+        },
+        dtcCodes: JSON.parse(diagnosis.errorCodes || '[]'),
+        serviceHistory: {
+          lastServiceDate: diagnosis.lastServiceDate || undefined,
+          partsReplaced: JSON.parse(diagnosis.partsReplaced || '[]'),
+          modifications: JSON.parse(diagnosis.modifications || '[]')
+        },
+        testResults: {
+          errorCodes: diagnosis.errorCodes || undefined,
+          visualInspection: diagnosis.visualInspection || undefined,
+          testDriveNotes: diagnosis.testDriveNotes || undefined
+        }
+      }
+
+      try {
+        // Generate fresh AI analysis with current market data
+        aiAnalysis = await aiMasterTechnician.analyzeDiagnosis(diagnosisData)
+        
+        // Update diagnosis with fresh AI analysis
+        await prisma.diagnosis.update({
+          where: { id: diagnosisId },
+          data: {
+            aiAnalysis: JSON.stringify(aiAnalysis),
+            updatedAt: new Date()
+          }
+        })
+        
+        console.log('✅ Fresh AI analysis generated successfully')
+      } catch (error) {
+        console.error('❌ Error generating fresh AI analysis:', error)
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Gagal menghasilkan analisis AI terbaru untuk laporan',
+            details: error instanceof Error ? error.message : 'Unknown error'
+          },
+          { status: 500 }
+        )
+      }
+    } else {
+      console.log('Using existing AI analysis from database')
+    }
 
     if (!aiAnalysis) {
       return NextResponse.json(
