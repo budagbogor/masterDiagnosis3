@@ -356,156 +356,160 @@ export default function DTCLibraryEnhanced() {
           </CardHeader>
           <CardContent>
             {selectedDTC ? (
-              <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="overview">Info</TabsTrigger>
-                  <TabsTrigger value="diagnosis">Diagnosa</TabsTrigger>
-                  <TabsTrigger value="repair">Perbaikan</TabsTrigger>
-                  <TabsTrigger value="components">Komponen</TabsTrigger>
-                </TabsList>
+              <div className="space-y-4">
+                <Tabs defaultValue="overview" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4 mb-4">
+                    <TabsTrigger value="overview" className="text-xs sm:text-sm">Info</TabsTrigger>
+                    <TabsTrigger value="diagnosis" className="text-xs sm:text-sm">Diagnosa</TabsTrigger>
+                    <TabsTrigger value="repair" className="text-xs sm:text-sm">Perbaikan</TabsTrigger>
+                    <TabsTrigger value="components" className="text-xs sm:text-sm">Komponen</TabsTrigger>
+                  </TabsList>
 
-                <TabsContent value="overview" className="space-y-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-mono font-bold text-xl text-blue-600">
-                        {selectedDTC.code}
-                      </span>
-                      {getSeverityBadge(selectedDTC.severity)}
-                    </div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      {selectedDTC.descriptionIndonesian}
-                    </h3>
-                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <span>{getSystemInfo(selectedDTC.system)?.icon}</span>
-                      <span>{getSystemInfo(selectedDTC.system)?.nameIndonesian}</span>
-                      {selectedDTC.subsystem && (
-                        <>
-                          <span>•</span>
-                          <span>{selectedDTC.subsystem}</span>
-                        </>
+                  <div className="min-h-[400px]">
+                    <TabsContent value="overview" className="space-y-4 mt-0">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="font-mono font-bold text-xl text-blue-600">
+                            {selectedDTC.code}
+                          </span>
+                          {getSeverityBadge(selectedDTC.severity)}
+                        </div>
+                        <h3 className="font-semibold text-lg mb-2">
+                          {selectedDTC.descriptionIndonesian}
+                        </h3>
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <span>{getSystemInfo(selectedDTC.system)?.icon}</span>
+                          <span>{getSystemInfo(selectedDTC.system)?.nameIndonesian}</span>
+                          {selectedDTC.subsystem && (
+                            <>
+                              <span>•</span>
+                              <span>{selectedDTC.subsystem}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <div>
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-orange-500" />
+                          Gejala yang Muncul
+                        </h4>
+                        <ul className="space-y-1">
+                          {selectedDTC.symptoms.map((symptom, index) => (
+                            <li key={index} className="text-sm text-slate-700 flex items-start gap-2">
+                              <span className="text-orange-500 mt-1">•</span>
+                              {symptom}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                          <Target className="w-4 h-4 text-red-500" />
+                          Kemungkinan Penyebab
+                        </h4>
+                        <ul className="space-y-1">
+                          {selectedDTC.possibleCauses.map((cause, index) => (
+                            <li key={index} className="text-sm text-slate-700 flex items-start gap-2">
+                              <span className="text-red-500 mt-1">•</span>
+                              {cause}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="diagnosis" className="space-y-4 mt-0">
+                      <div>
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                          <Search className="w-4 h-4 text-blue-500" />
+                          Langkah Diagnosa
+                        </h4>
+                        <ol className="space-y-2">
+                          {selectedDTC.diagnosticSteps.map((step, index) => (
+                            <li key={index} className="text-sm text-slate-700 flex items-start gap-3">
+                              <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">
+                                {index + 1}
+                              </span>
+                              <span className="flex-1">{step}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="repair" className="space-y-4 mt-0">
+                      <div>
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                          <Wrench className="w-4 h-4 text-green-500" />
+                          Prosedur Perbaikan
+                        </h4>
+                        <ol className="space-y-2">
+                          {selectedDTC.repairProcedures.map((procedure, index) => (
+                            <li key={index} className="text-sm text-slate-700 flex items-start gap-3">
+                              <span className="flex-shrink-0 w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold">
+                                {index + 1}
+                              </span>
+                              <span className="flex-1">{procedure}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="components" className="space-y-4 mt-0">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <Zap className="w-4 h-4 text-purple-500" />
+                            Sensor Terkait
+                          </h4>
+                          <div className="space-y-1">
+                            {selectedDTC.relatedSensors.map((sensor, index) => (
+                              <Badge key={index} variant="outline" className="mr-1 mb-1">
+                                {sensor}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <Settings className="w-4 h-4 text-indigo-500" />
+                            Aktuator Terkait
+                          </h4>
+                          <div className="space-y-1">
+                            {selectedDTC.relatedActuators.map((actuator, index) => (
+                              <Badge key={index} variant="outline" className="mr-1 mb-1">
+                                {actuator}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {selectedDTC.applicableVehicles && selectedDTC.applicableVehicles.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <Car className="w-4 h-4 text-slate-500" />
+                            Kendaraan yang Berlaku
+                          </h4>
+                          <div className="flex flex-wrap gap-1">
+                            {selectedDTC.applicableVehicles.map((vehicle, index) => (
+                              <Badge key={index} variant="secondary">
+                                {vehicle}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
                       )}
-                    </div>
+                    </TabsContent>
                   </div>
-
-                  <Separator />
-
-                  <div>
-                    <h4 className="font-semibold mb-2 flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4 text-orange-500" />
-                      Gejala yang Muncul
-                    </h4>
-                    <ul className="space-y-1">
-                      {selectedDTC.symptoms.map((symptom, index) => (
-                        <li key={index} className="text-sm text-slate-700 flex items-start gap-2">
-                          <span className="text-orange-500 mt-1">•</span>
-                          {symptom}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-2 flex items-center gap-2">
-                      <Target className="w-4 h-4 text-red-500" />
-                      Kemungkinan Penyebab
-                    </h4>
-                    <ul className="space-y-1">
-                      {selectedDTC.possibleCauses.map((cause, index) => (
-                        <li key={index} className="text-sm text-slate-700 flex items-start gap-2">
-                          <span className="text-red-500 mt-1">•</span>
-                          {cause}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="diagnosis" className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold mb-2 flex items-center gap-2">
-                      <Search className="w-4 h-4 text-blue-500" />
-                      Langkah Diagnosa
-                    </h4>
-                    <ol className="space-y-2">
-                      {selectedDTC.diagnosticSteps.map((step, index) => (
-                        <li key={index} className="text-sm text-slate-700 flex items-start gap-3">
-                          <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">
-                            {index + 1}
-                          </span>
-                          {step}
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="repair" className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold mb-2 flex items-center gap-2">
-                      <Wrench className="w-4 h-4 text-green-500" />
-                      Prosedur Perbaikan
-                    </h4>
-                    <ol className="space-y-2">
-                      {selectedDTC.repairProcedures.map((procedure, index) => (
-                        <li key={index} className="text-sm text-slate-700 flex items-start gap-3">
-                          <span className="flex-shrink-0 w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold">
-                            {index + 1}
-                          </span>
-                          {procedure}
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="components" className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <Zap className="w-4 h-4 text-purple-500" />
-                        Sensor Terkait
-                      </h4>
-                      <div className="space-y-1">
-                        {selectedDTC.relatedSensors.map((sensor, index) => (
-                          <Badge key={index} variant="outline" className="mr-1 mb-1">
-                            {sensor}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <Settings className="w-4 h-4 text-indigo-500" />
-                        Aktuator Terkait
-                      </h4>
-                      <div className="space-y-1">
-                        {selectedDTC.relatedActuators.map((actuator, index) => (
-                          <Badge key={index} variant="outline" className="mr-1 mb-1">
-                            {actuator}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {selectedDTC.applicableVehicles && selectedDTC.applicableVehicles.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <Car className="w-4 h-4 text-slate-500" />
-                        Kendaraan yang Berlaku
-                      </h4>
-                      <div className="flex flex-wrap gap-1">
-                        {selectedDTC.applicableVehicles.map((vehicle, index) => (
-                          <Badge key={index} variant="secondary">
-                            {vehicle}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </TabsContent>
-              </Tabs>
+                </Tabs>
+              </div>
             ) : (
               <div className="text-center py-8 text-slate-500">
                 <BookOpen className="w-12 h-12 mx-auto mb-4 text-slate-300" />
