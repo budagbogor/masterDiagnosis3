@@ -23,7 +23,12 @@ import {
   Zap,
   Settings,
   Hammer,
-  Loader2
+  Loader2,
+  Target,
+  TrendingUp,
+  Shield,
+  Gauge,
+  Activity
 } from 'lucide-react'
 
 interface DiagnosisResultProps {
@@ -77,11 +82,11 @@ export default function DiagnosisResultEnhanced({
 
   const getComplexityColor = (complexity: string) => {
     switch (complexity) {
-      case 'MUDAH': return 'bg-green-100 text-green-800'
-      case 'SEDANG': return 'bg-yellow-100 text-yellow-800'
-      case 'SULIT': return 'bg-orange-100 text-orange-800'
-      case 'SANGAT_SULIT': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'MUDAH': return 'bg-emerald-500 text-white'
+      case 'SEDANG': return 'bg-amber-500 text-white'
+      case 'SULIT': return 'bg-orange-500 text-white'
+      case 'SANGAT_SULIT': return 'bg-red-500 text-white'
+      default: return 'bg-slate-500 text-white'
     }
   }
 
@@ -103,12 +108,19 @@ export default function DiagnosisResultEnhanced({
     }).format(amount)
   }
 
+  const getConfidenceColor = (confidence: number) => {
+    if (confidence >= 0.9) return 'text-emerald-600 bg-emerald-50'
+    if (confidence >= 0.7) return 'text-blue-600 bg-blue-50'
+    if (confidence >= 0.5) return 'text-amber-600 bg-amber-50'
+    return 'text-red-600 bg-red-50'
+  }
+
   if (!aiAnalysis) {
     return (
       <div className="max-w-4xl mx-auto">
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
+        <Alert className="border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-800">
             Data hasil analisis tidak tersedia. Silakan coba lagi.
           </AlertDescription>
         </Alert>
@@ -117,330 +129,355 @@ export default function DiagnosisResultEnhanced({
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Hasil Diagnosa AI Master Teknisi</h2>
-          <p className="text-sm text-slate-600">
-            Diagnosis ID: {diagnosisId} • Confidence: {Math.round(aiAnalysis.confidence * 100)}%
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Button 
-            variant="outline" 
-            onClick={handleGenerateReport}
-            disabled={isGeneratingReport}
-            className="w-full sm:w-auto"
-          >
-            {isGeneratingReport ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Membuat Laporan...
-              </>
-            ) : (
-              <>
-                <FileText className="w-4 h-4 mr-2" />
-                Generate Report
-              </>
-            )}
-          </Button>
-          <Button variant="outline" onClick={onBack} className="w-full sm:w-auto">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Kembali
-          </Button>
+    <div className="max-w-7xl mx-auto space-y-6 bg-slate-50 min-h-screen p-4">
+      {/* Professional Header */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                <Activity className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">DIAGNOSTIC REPORT</h1>
+                <p className="text-sm text-slate-600 font-mono">ID: {diagnosisId}</p>
+              </div>
+            </div>
+            
+            {/* Confidence Meter */}
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold ${getConfidenceColor(aiAnalysis.confidence)}`}>
+              <Gauge className="w-4 h-4" />
+              CONFIDENCE: {Math.round(aiAnalysis.confidence * 100)}%
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button 
+              onClick={handleGenerateReport}
+              disabled={isGeneratingReport}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+            >
+              {isGeneratingReport ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  GENERATING...
+                </>
+              ) : (
+                <>
+                  <FileText className="w-4 h-4 mr-2" />
+                  EXPORT PDF
+                </>
+              )}
+            </Button>
+            <Button variant="outline" onClick={onBack} className="font-semibold">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              BACK
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Confidence Indicator */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Tingkat Kepercayaan AI</span>
-            <span className="text-sm font-bold">{Math.round(aiAnalysis.confidence * 100)}%</span>
-          </div>
-          <Progress value={aiAnalysis.confidence * 100} className="h-2" />
-          <p className="text-xs text-slate-500 mt-1">
-            Semakin tinggi persentase, semakin akurat diagnosa AI
-          </p>
-        </CardContent>
-      </Card>
-
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Mobile: Dropdown selector */}
-        <div className="block sm:hidden mb-4">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Pilih tab" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="overview">📊 Overview</SelectItem>
-              <SelectItem value="diagnosis">🔍 Langkah Diagnosa</SelectItem>
-              <SelectItem value="theory">📚 Teori Kerja</SelectItem>
-              <SelectItem value="procedures">🔧 Prosedur Perbaikan</SelectItem>
-              <SelectItem value="cost">💰 Estimasi Biaya</SelectItem>
-            </SelectContent>
-          </Select>
+        {/* Professional Tab Navigation */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-2">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-12 bg-slate-100 rounded-lg p-1">
+            <TabsTrigger value="overview" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Target className="w-4 h-4 mr-1 lg:mr-2" />
+              OVERVIEW
+            </TabsTrigger>
+            <TabsTrigger value="diagnosis" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Zap className="w-4 h-4 mr-1 lg:mr-2" />
+              DIAGNOSIS
+            </TabsTrigger>
+            <TabsTrigger value="theory" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Settings className="w-4 h-4 mr-1 lg:mr-2" />
+              THEORY
+            </TabsTrigger>
+            <TabsTrigger value="procedures" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Wrench className="w-4 h-4 mr-1 lg:mr-2" />
+              REPAIR
+            </TabsTrigger>
+            <TabsTrigger value="cost" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <DollarSign className="w-4 h-4 mr-1 lg:mr-2" />
+              COST
+            </TabsTrigger>
+          </TabsList>
         </div>
 
-        {/* Desktop: Tab list */}
-        <TabsList className="hidden sm:grid w-full grid-cols-3 lg:grid-cols-5 h-auto p-1">
-          <TabsTrigger value="overview" className="text-sm px-2 py-2">
-            <span className="hidden lg:inline">📊 </span>Overview
-          </TabsTrigger>
-          <TabsTrigger value="diagnosis" className="text-sm px-2 py-2">
-            <span className="hidden lg:inline">🔍 </span>Diagnosa
-          </TabsTrigger>
-          <TabsTrigger value="theory" className="text-sm px-2 py-2">
-            <span className="hidden lg:inline">📚 </span>Teori
-          </TabsTrigger>
-          <TabsTrigger value="procedures" className="text-sm px-2 py-2">
-            <span className="hidden lg:inline">🔧 </span>Prosedur
-          </TabsTrigger>
-          <TabsTrigger value="cost" className="text-sm px-2 py-2">
-            <span className="hidden lg:inline">💰 </span>Biaya
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Overview Tab */}
+        {/* Overview Tab - Technical Dashboard Style */}
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Primary Cause */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-red-500" />
-                  Penyebab Utama
-                </CardTitle>
-                <CardDescription>
-                  Probabilitas: {Math.round(aiAnalysis.primaryCause.probability * 100)}%
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-lg">{aiAnalysis.primaryCause.component}</h4>
-                  <p className="text-sm text-slate-600 mt-1">{aiAnalysis.primaryCause.description}</p>
+          {/* Primary Diagnosis Block */}
+          <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-xl shadow-lg text-white p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold mb-1">PRIMARY FAULT</h2>
+                <p className="text-red-100 text-sm">PROBABILITY: {Math.round(aiAnalysis.primaryCause.probability * 100)}%</p>
+              </div>
+              <div className="bg-white/20 rounded-lg p-3">
+                <AlertTriangle className="w-8 h-8" />
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <h3 className="text-2xl font-bold">{aiAnalysis.primaryCause.component}</h3>
+              <p className="text-red-100 leading-relaxed">{aiAnalysis.primaryCause.description}</p>
+              
+              <div className="flex flex-wrap gap-2 pt-2">
+                <div className={`px-3 py-1 rounded-full text-xs font-bold ${getComplexityColor(aiAnalysis.primaryCause.repairComplexity)}`}>
+                  {getComplexityIcon(aiAnalysis.primaryCause.repairComplexity)}
+                  <span className="ml-1">{aiAnalysis.primaryCause.repairComplexity}</span>
                 </div>
-                
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge className={getComplexityColor(aiAnalysis.primaryCause.repairComplexity)}>
-                    {getComplexityIcon(aiAnalysis.primaryCause.repairComplexity)}
-                    {aiAnalysis.primaryCause.repairComplexity}
-                  </Badge>
-                  <Badge variant="outline" className="text-xs">
-                    <DollarSign className="w-3 h-3 mr-1" />
-                    {formatCurrency(aiAnalysis.primaryCause.estimatedCost.min)} - {formatCurrency(aiAnalysis.primaryCause.estimatedCost.max)}
-                  </Badge>
+                <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">
+                  {formatCurrency(aiAnalysis.primaryCause.estimatedCost.min)} - {formatCurrency(aiAnalysis.primaryCause.estimatedCost.max)}
                 </div>
-
-                <div>
-                  <h5 className="font-medium text-sm mb-2">Gejala Terkait:</h5>
-                  <div className="flex flex-wrap gap-1">
-                    {aiAnalysis.primaryCause.symptoms.map((symptom: string, index: number) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {symptom}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Secondary Causes */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-orange-500" />
-                  Kemungkinan Lain
-                </CardTitle>
-                <CardDescription>
-                  {aiAnalysis.secondaryCauses.length} kemungkinan alternatif
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {aiAnalysis.secondaryCauses.slice(0, 3).map((cause: any, index: number) => (
-                    <div key={index} className="border-l-2 border-slate-200 pl-3">
-                      <div className="flex items-center justify-between">
-                        <h5 className="font-medium text-sm">{cause.component}</h5>
-                        <span className="text-xs text-slate-500">
-                          {Math.round(cause.probability * 100)}%
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-600 mt-1">{cause.description}</p>
-                      <Badge className={`${getComplexityColor(cause.repairComplexity)} text-xs mt-1`}>
-                        {cause.repairComplexity}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          {/* Quick Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Ringkasan Estimasi</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <DollarSign className="w-8 h-8 mx-auto text-blue-600 mb-2" />
-                  <p className="text-sm text-slate-600">Total Estimasi</p>
-                  <p className="text-lg sm:text-xl font-bold text-blue-600">
-                    {formatCurrency(aiAnalysis.estimatedTotalCost.total)}
-                  </p>
+          {/* Technical Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Cost Summary */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-slate-900">COST ANALYSIS</h3>
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Parts</span>
+                  <span className="font-bold text-green-600">{formatCurrency(aiAnalysis.estimatedTotalCost.parts)}</span>
                 </div>
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <Hammer className="w-8 h-8 mx-auto text-green-600 mb-2" />
-                  <p className="text-sm text-slate-600">Biaya Parts</p>
-                  <p className="text-lg sm:text-xl font-bold text-green-600">
-                    {formatCurrency(aiAnalysis.estimatedTotalCost.parts)}
-                  </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Labor</span>
+                  <span className="font-bold text-blue-600">{formatCurrency(aiAnalysis.estimatedTotalCost.labor)}</span>
                 </div>
-                <div className="text-center p-4 bg-orange-50 rounded-lg sm:col-span-2 lg:col-span-1">
-                  <Wrench className="w-8 h-8 mx-auto text-orange-600 mb-2" />
-                  <p className="text-sm text-slate-600">Biaya Labor</p>
-                  <p className="text-lg sm:text-xl font-bold text-orange-600">
-                    {formatCurrency(aiAnalysis.estimatedTotalCost.labor)}
-                  </p>
+                <Separator />
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-900">TOTAL</span>
+                  <span className="font-bold text-xl text-slate-900">{formatCurrency(aiAnalysis.estimatedTotalCost.total)}</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Confidence Meter */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-slate-900">AI CONFIDENCE</h3>
+                <Gauge className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="space-y-3">
+                <div className="relative">
+                  <Progress value={aiAnalysis.confidence * 100} className="h-3" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white mix-blend-difference">
+                      {Math.round(aiAnalysis.confidence * 100)}%
+                    </span>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-600 text-center">
+                  {aiAnalysis.confidence >= 0.9 ? 'VERY HIGH' : 
+                   aiAnalysis.confidence >= 0.7 ? 'HIGH' : 
+                   aiAnalysis.confidence >= 0.5 ? 'MODERATE' : 'LOW'} CONFIDENCE
+                </p>
+              </div>
+            </div>
+
+            {/* Complexity Rating */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-slate-900">REPAIR COMPLEXITY</h3>
+                <Shield className="w-6 h-6 text-orange-600" />
+              </div>
+              <div className="text-center">
+                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-bold ${getComplexityColor(aiAnalysis.primaryCause.repairComplexity)}`}>
+                  {getComplexityIcon(aiAnalysis.primaryCause.repairComplexity)}
+                  {aiAnalysis.primaryCause.repairComplexity}
+                </div>
+                <p className="text-xs text-slate-600 mt-2">Primary fault complexity level</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Secondary Causes - Technical List */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-orange-600" />
+              ALTERNATIVE DIAGNOSES
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {aiAnalysis.secondaryCauses.slice(0, 6).map((cause: any, index: number) => (
+                <div key={index} className="border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-sm text-slate-900">{cause.component}</h4>
+                    <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded">
+                      {Math.round(cause.probability * 100)}%
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 mb-3 line-clamp-2">{cause.description}</p>
+                  <div className="flex items-center justify-between">
+                    <div className={`px-2 py-1 rounded text-xs font-bold ${getComplexityColor(cause.repairComplexity)}`}>
+                      {cause.repairComplexity}
+                    </div>
+                    <span className="text-xs font-semibold text-slate-700">
+                      {formatCurrency(cause.estimatedCost.min)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Symptoms Matrix */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <Activity className="w-5 h-5 text-blue-600" />
+              SYMPTOM CORRELATION
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {aiAnalysis.primaryCause.symptoms.map((symptom: string, index: number) => (
+                <div key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {symptom}
+                </div>
+              ))}
+            </div>
+          </div>
         </TabsContent>
 
-        {/* Diagnosis Tab */}
+        {/* Diagnosis Tab - Technical Steps */}
         <TabsContent value="diagnosis" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Langkah Diagnosa</CardTitle>
-              <CardDescription>
-                Prosedur sistematis untuk memastikan diagnosa
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {aiAnalysis.diagnosticSteps.map((step: any, index: number) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <Zap className="w-6 h-6 text-blue-600" />
+              DIAGNOSTIC PROCEDURE
+            </h2>
+            
+            <div className="space-y-6">
+              {aiAnalysis.diagnosticSteps.map((step: any, index: number) => (
+                <div key={index} className="border border-slate-200 rounded-lg overflow-hidden">
+                  {/* Step Header */}
+                  <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold">
                         {step.step}
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold">{step.title}</h4>
-                        <p className="text-sm text-slate-600 mt-1">{step.description}</p>
-                        
-                        <div className="mt-3 grid md:grid-cols-2 gap-4">
-                          <div>
-                            <h5 className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                              Hasil yang Diharapkan
-                            </h5>
-                            <p className="text-sm mt-1">{step.expectedResult}</p>
-                          </div>
-                          <div>
-                            <h5 className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                              Tools Diperlukan
-                            </h5>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {step.tools.map((tool: string, toolIndex: number) => (
-                                <Badge key={toolIndex} variant="outline" className="text-xs">
-                                  {tool}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        {step.safetyNotes && step.safetyNotes.length > 0 && (
-                          <Alert className="mt-3">
-                            <AlertTriangle className="h-4 w-4" />
-                            <AlertDescription>
-                              <strong>Catatan Keselamatan:</strong> {step.safetyNotes.join(', ')}
-                            </AlertDescription>
-                          </Alert>
-                        )}
+                      <div>
+                        <h3 className="font-bold text-slate-900">{step.title}</h3>
+                        <p className="text-sm text-slate-600">{step.description}</p>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  
+                  {/* Step Content */}
+                  <div className="p-6 space-y-4">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <h4 className="font-semibold text-sm text-slate-900 uppercase tracking-wide">Expected Result</h4>
+                        <p className="text-sm text-slate-700 bg-green-50 p-3 rounded border-l-4 border-green-500">
+                          {step.expectedResult}
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="font-semibold text-sm text-slate-900 uppercase tracking-wide">Required Tools</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {step.tools.map((tool: string, toolIndex: number) => (
+                            <span key={toolIndex} className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-medium">
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
 
-        {/* Theory Tab */}
-        <TabsContent value="theory" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Penjelasan Teori Kerja</CardTitle>
-              <CardDescription>
-                Pemahaman mendalam tentang sistem yang bermasalah
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="prose prose-sm max-w-none">
-                <div className="whitespace-pre-wrap text-slate-700 leading-relaxed">
-                  {aiAnalysis.theoryExplanation}
+                    {step.safetyNotes && step.safetyNotes.length > 0 && (
+                      <Alert className="border-red-200 bg-red-50">
+                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                        <AlertDescription className="text-red-800">
+                          <strong>SAFETY:</strong> {step.safetyNotes.join(' • ')}
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+          </div>
         </TabsContent>
 
-        {/* Procedures Tab */}
+        {/* Theory Tab - Technical Documentation */}
+        <TabsContent value="theory" className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <Settings className="w-6 h-6 text-blue-600" />
+              TECHNICAL THEORY
+            </h2>
+            <div className="prose prose-slate max-w-none">
+              <div className="bg-slate-50 p-6 rounded-lg border-l-4 border-blue-500 text-slate-700 leading-relaxed whitespace-pre-wrap font-mono text-sm">
+                {aiAnalysis.theoryExplanation}
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Procedures Tab - Technical Manual Style */}
         <TabsContent value="procedures" className="space-y-6">
           {aiAnalysis.repairProcedures.map((procedure: any, index: number) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>{procedure.title}</span>
-                  <div className="flex items-center gap-2">
-                    <Badge className={getComplexityColor(procedure.difficultyLevel)}>
-                      {getComplexityIcon(procedure.difficultyLevel)}
-                      {procedure.difficultyLevel}
-                    </Badge>
-                    <Badge variant="outline">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {procedure.estimatedTime} menit
-                    </Badge>
+            <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              {/* Procedure Header */}
+              <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold">{procedure.title}</h2>
+                    <p className="text-slate-300 mt-1">{procedure.description}</p>
                   </div>
-                </CardTitle>
-                <CardDescription>{procedure.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Steps */}
+                  <div className="flex items-center gap-3">
+                    <div className={`px-3 py-1 rounded-full text-xs font-bold ${getComplexityColor(procedure.difficultyLevel)}`}>
+                      {getComplexityIcon(procedure.difficultyLevel)}
+                      <span className="ml-1">{procedure.difficultyLevel}</span>
+                    </div>
+                    <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">
+                      <Clock className="w-3 h-3 mr-1 inline" />
+                      {procedure.estimatedTime} MIN
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {/* Repair Steps */}
                 <div>
-                  <h4 className="font-semibold mb-3">Langkah Perbaikan:</h4>
-                  <ol className="space-y-2">
+                  <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <Wrench className="w-5 h-5 text-blue-600" />
+                    REPAIR STEPS
+                  </h3>
+                  <div className="space-y-3">
                     {procedure.steps.map((step: string, stepIndex: number) => (
-                      <li key={stepIndex} className="flex items-start gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">
+                      <div key={stepIndex} className="flex items-start gap-4 p-3 bg-slate-50 rounded-lg">
+                        <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                           {stepIndex + 1}
-                        </span>
-                        <span className="text-sm">{step}</span>
-                      </li>
+                        </div>
+                        <p className="text-sm text-slate-700 pt-1">{step}</p>
+                      </div>
                     ))}
-                  </ol>
+                  </div>
                 </div>
 
-                <Separator />
-
-                {/* Required Parts and Tools */}
+                {/* Parts and Tools Grid */}
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-3">Parts Diperlukan:</h4>
-                    <div className="space-y-2">
+                  <div className="border border-slate-200 rounded-lg p-4">
+                    <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                      <Hammer className="w-5 h-5 text-green-600" />
+                      REQUIRED PARTS
+                    </h3>
+                    <div className="space-y-3">
                       {procedure.requiredParts.map((part: any, partIndex: number) => (
-                        <div key={partIndex} className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                        <div key={partIndex} className="flex items-center justify-between p-3 bg-green-50 rounded border-l-4 border-green-500">
                           <div>
-                            <p className="text-sm font-medium">{part.name}</p>
+                            <p className="font-semibold text-sm text-slate-900">{part.name}</p>
                             {part.partNumber && (
-                              <p className="text-xs text-slate-500">Part #: {part.partNumber}</p>
+                              <p className="text-xs text-slate-600 font-mono">#{part.partNumber}</p>
                             )}
                           </div>
-                          <span className="text-sm font-semibold">
+                          <span className="font-bold text-green-700">
                             {formatCurrency(part.estimatedPrice)}
                           </span>
                         </div>
@@ -448,13 +485,16 @@ export default function DiagnosisResultEnhanced({
                     </div>
                   </div>
 
-                  <div>
-                    <h4 className="font-semibold mb-3">Tools Diperlukan:</h4>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="border border-slate-200 rounded-lg p-4">
+                    <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                      <Settings className="w-5 h-5 text-blue-600" />
+                      REQUIRED TOOLS
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
                       {procedure.requiredTools.map((tool: string, toolIndex: number) => (
-                        <Badge key={toolIndex} variant="outline">
+                        <div key={toolIndex} className="bg-blue-50 text-blue-800 px-3 py-2 rounded text-sm font-medium text-center">
                           {tool}
-                        </Badge>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -462,98 +502,112 @@ export default function DiagnosisResultEnhanced({
 
                 {/* Safety and Quality */}
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-3 text-red-600">Precautions Keselamatan:</h4>
-                    <ul className="space-y-1">
+                  <div className="border border-red-200 rounded-lg p-4 bg-red-50">
+                    <h3 className="font-bold text-red-800 mb-3 flex items-center gap-2">
+                      <Shield className="w-5 h-5" />
+                      SAFETY PRECAUTIONS
+                    </h3>
+                    <ul className="space-y-2">
                       {procedure.safetyPrecautions.map((precaution: string, precautionIndex: number) => (
-                        <li key={precautionIndex} className="text-sm flex items-start gap-2">
-                          <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                        <li key={precautionIndex} className="text-sm text-red-700 flex items-start gap-2">
+                          <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                           {precaution}
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div>
-                    <h4 className="font-semibold mb-3 text-green-600">Quality Checks:</h4>
-                    <ul className="space-y-1">
+                  <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                    <h3 className="font-bold text-green-800 mb-3 flex items-center gap-2">
+                      <CheckCircle2 className="w-5 h-5" />
+                      QUALITY CHECKS
+                    </h3>
+                    <ul className="space-y-2">
                       {procedure.qualityChecks.map((check: string, checkIndex: number) => (
-                        <li key={checkIndex} className="text-sm flex items-start gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                        <li key={checkIndex} className="text-sm text-green-700 flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
                           {check}
                         </li>
                       ))}
                     </ul>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </TabsContent>
 
-        {/* Cost Tab */}
+        {/* Cost Tab - Financial Analysis */}
         <TabsContent value="cost" className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Cost Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Rincian Biaya</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
-                  <span className="font-medium">Biaya Parts</span>
-                  <span className="font-bold text-blue-600">
-                    {formatCurrency(aiAnalysis.estimatedTotalCost.parts)}
-                  </span>
+            {/* Total Cost Breakdown */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <DollarSign className="w-6 h-6 text-green-600" />
+                COST BREAKDOWN
+              </h2>
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-blue-900">PARTS COST</span>
+                    <span className="font-bold text-xl text-blue-700">
+                      {formatCurrency(aiAnalysis.estimatedTotalCost.parts)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-green-50 rounded">
-                  <span className="font-medium">Biaya Labor</span>
-                  <span className="font-bold text-green-600">
-                    {formatCurrency(aiAnalysis.estimatedTotalCost.labor)}
-                  </span>
+                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-green-900">LABOR COST</span>
+                    <span className="font-bold text-xl text-green-700">
+                      {formatCurrency(aiAnalysis.estimatedTotalCost.labor)}
+                    </span>
+                  </div>
                 </div>
                 <Separator />
-                <div className="flex justify-between items-center p-3 bg-slate-100 rounded">
-                  <span className="font-bold">Total Estimasi</span>
-                  <span className="font-bold text-lg">
-                    {formatCurrency(aiAnalysis.estimatedTotalCost.total)}
-                  </span>
+                <div className="bg-slate-100 p-4 rounded-lg border-l-4 border-slate-500">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-slate-900">TOTAL ESTIMATE</span>
+                    <span className="font-bold text-2xl text-slate-900">
+                      {formatCurrency(aiAnalysis.estimatedTotalCost.total)}
+                    </span>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Cost by Cause */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Estimasi per Penyebab</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="border-l-4 border-red-500 pl-3">
-                  <h4 className="font-semibold text-sm">{aiAnalysis.primaryCause.component}</h4>
-                  <p className="text-xs text-slate-600">Penyebab Utama</p>
-                  <p className="font-bold text-red-600">
+            {/* Cost by Diagnosis */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <Target className="w-6 h-6 text-orange-600" />
+                COST BY DIAGNOSIS
+              </h2>
+              <div className="space-y-4">
+                <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+                  <h3 className="font-bold text-red-900 text-sm">{aiAnalysis.primaryCause.component}</h3>
+                  <p className="text-xs text-red-700 mb-2">PRIMARY FAULT</p>
+                  <p className="font-bold text-lg text-red-800">
                     {formatCurrency(aiAnalysis.primaryCause.estimatedCost.min)} - {formatCurrency(aiAnalysis.primaryCause.estimatedCost.max)}
                   </p>
                 </div>
                 
                 {aiAnalysis.secondaryCauses.slice(0, 3).map((cause: any, index: number) => (
-                  <div key={index} className="border-l-4 border-orange-300 pl-3">
-                    <h4 className="font-semibold text-sm">{cause.component}</h4>
-                    <p className="text-xs text-slate-600">Kemungkinan {Math.round(cause.probability * 100)}%</p>
-                    <p className="font-bold text-orange-600">
+                  <div key={index} className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-300">
+                    <h3 className="font-bold text-orange-900 text-sm">{cause.component}</h3>
+                    <p className="text-xs text-orange-700 mb-2">PROBABILITY {Math.round(cause.probability * 100)}%</p>
+                    <p className="font-bold text-orange-800">
                       {formatCurrency(cause.estimatedCost.min)} - {formatCurrency(cause.estimatedCost.max)}
                     </p>
                   </div>
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              <strong>Catatan:</strong> Estimasi biaya berdasarkan harga pasar Indonesia tahun 2024. 
-              Harga aktual dapat bervariasi tergantung lokasi, supplier, dan kondisi pasar.
+          <Alert className="border-blue-200 bg-blue-50">
+            <Info className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800">
+              <strong>DISCLAIMER:</strong> Estimasi biaya berdasarkan harga pasar Indonesia 2024. 
+              Harga aktual dapat bervariasi tergantung lokasi, supplier, dan kondisi pasar saat ini.
             </AlertDescription>
           </Alert>
         </TabsContent>

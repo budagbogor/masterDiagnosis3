@@ -3,11 +3,11 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Mulai seeding database...')
+  console.log('Mulai seeding database dengan kendaraan Indonesia saja...')
 
-  // Seed Engines
+  // Seed Engines - Lengkapi dengan semua engine yang ada di Indonesia
   const engines = [
-    // Toyota Engines
+    // Toyota Engines - Lengkap
     {
       code: '1NZ-FE',
       brand: 'Toyota',
@@ -44,7 +44,92 @@ async function main() {
       commonVehicles: JSON.stringify(['Toyota Agya', 'Daihatsu Ayla']),
       commonIssues: JSON.stringify(['Engine mount wear', 'Spark plug fouling']),
     },
-    // Honda Engines
+    {
+      code: '2GR-FE',
+      brand: 'Toyota',
+      displacement: 3456,
+      cylinders: 6,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 277,
+      torque: 346,
+      commonVehicles: JSON.stringify(['Toyota Camry', 'Toyota Alphard']),
+      commonIssues: JSON.stringify(['Carbon buildup', 'Water pump failure']),
+    },
+    {
+      code: '1GD-FTV',
+      brand: 'Toyota',
+      displacement: 2755,
+      cylinders: 4,
+      fuel: 'DIESEL' as const,
+      aspiration: 'TURBO' as const,
+      power: 177,
+      torque: 450,
+      commonVehicles: JSON.stringify(['Toyota Fortuner', 'Toyota Hilux']),
+      commonIssues: JSON.stringify(['DPF clogging', 'Turbo failure', 'Fuel injector issues']),
+    },
+    {
+      code: '2TR-FE',
+      brand: 'Toyota',
+      displacement: 2694,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 166,
+      torque: 245,
+      commonVehicles: JSON.stringify(['Toyota Fortuner', 'Toyota Hilux']),
+      commonIssues: JSON.stringify(['Timing chain stretch', 'VVT-i problems']),
+    },
+    {
+      code: '1TR-FE',
+      brand: 'Toyota',
+      displacement: 1998,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 136,
+      torque: 183,
+      commonVehicles: JSON.stringify(['Toyota Innova', 'Toyota Kijang']),
+      commonIssues: JSON.stringify(['Carbon buildup', 'Oil consumption']),
+    },
+    {
+      code: '2ZR-FE',
+      brand: 'Toyota',
+      displacement: 1797,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 140,
+      torque: 173,
+      commonVehicles: JSON.stringify(['Toyota Corolla Altis']),
+      commonIssues: JSON.stringify(['Oil consumption', 'VVT-i solenoid']),
+    },
+    {
+      code: 'M20A-FKS',
+      brand: 'Toyota',
+      displacement: 1987,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 169,
+      torque: 205,
+      commonVehicles: JSON.stringify(['Toyota Corolla Cross', 'Toyota C-HR']),
+      commonIssues: JSON.stringify(['Direct injection carbon buildup']),
+    },
+    {
+      code: '1KR-FE',
+      brand: 'Toyota',
+      displacement: 996,
+      cylinders: 3,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 98,
+      torque: 140,
+      commonVehicles: JSON.stringify(['Toyota Raize', 'Daihatsu Rocky']),
+      commonIssues: JSON.stringify(['Turbo lag', 'Carbon buildup']),
+    },
+
+    // Honda Engines - Lengkap
     {
       code: 'L15A7',
       brand: 'Honda',
@@ -69,7 +154,44 @@ async function main() {
       commonVehicles: JSON.stringify(['Honda Civic', 'Honda CR-V']),
       commonIssues: JSON.stringify(['Carbon buildup', 'VTC actuator failure']),
     },
-    // Mitsubishi Engines
+    {
+      code: 'L15B7',
+      brand: 'Honda',
+      displacement: 1498,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 173,
+      torque: 220,
+      commonVehicles: JSON.stringify(['Honda CR-V Turbo', 'Honda Civic Turbo']),
+      commonIssues: JSON.stringify(['Turbo lag', 'Carbon buildup', 'Fuel dilution']),
+    },
+    {
+      code: 'L12B1',
+      brand: 'Honda',
+      displacement: 1198,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 90,
+      torque: 110,
+      commonVehicles: JSON.stringify(['Honda Brio']),
+      commonIssues: JSON.stringify(['Timing chain noise', 'Oil consumption']),
+    },
+    {
+      code: 'K20C4',
+      brand: 'Honda',
+      displacement: 1996,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 306,
+      torque: 400,
+      commonVehicles: JSON.stringify(['Honda Civic Type R']),
+      commonIssues: JSON.stringify(['Turbo overheating', 'High fuel consumption']),
+    },
+
+    // Mitsubishi Engines - Lengkap
     {
       code: '4A91',
       brand: 'Mitsubishi',
@@ -82,6 +204,458 @@ async function main() {
       commonVehicles: JSON.stringify(['Mitsubishi Mirage', 'Mitsubishi Xpander']),
       commonIssues: JSON.stringify(['Timing chain stretch', 'Oil consumption']),
     },
+    {
+      code: '4N15',
+      brand: 'Mitsubishi',
+      displacement: 2442,
+      cylinders: 4,
+      fuel: 'DIESEL' as const,
+      aspiration: 'TURBO' as const,
+      power: 181,
+      torque: 430,
+      commonVehicles: JSON.stringify(['Mitsubishi Pajero Sport', 'Mitsubishi Triton']),
+      commonIssues: JSON.stringify(['DPF issues', 'Turbo failure', 'EGR valve problems']),
+    },
+    {
+      code: '4J11',
+      brand: 'Mitsubishi',
+      displacement: 2378,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 170,
+      torque: 226,
+      commonVehicles: JSON.stringify(['Mitsubishi Outlander']),
+      commonIssues: JSON.stringify(['Timing chain stretch', 'Oil consumption']),
+    },
+    {
+      code: '4B12',
+      brand: 'Mitsubishi',
+      displacement: 2359,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 150,
+      torque: 240,
+      commonVehicles: JSON.stringify(['Mitsubishi Eclipse Cross']),
+      commonIssues: JSON.stringify(['Turbo failure', 'Carbon buildup']),
+    },
+
+    // Suzuki Engines - Lengkap
+    {
+      code: 'K15B',
+      brand: 'Suzuki',
+      displacement: 1462,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 105,
+      torque: 138,
+      commonVehicles: JSON.stringify(['Suzuki Ertiga', 'Suzuki Swift']),
+      commonIssues: JSON.stringify(['Carbon buildup', 'Timing chain noise']),
+    },
+    {
+      code: 'K10B',
+      brand: 'Suzuki',
+      displacement: 998,
+      cylinders: 3,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 68,
+      torque: 90,
+      commonVehicles: JSON.stringify(['Suzuki Karimun Wagon R', 'Suzuki Ignis']),
+      commonIssues: JSON.stringify(['Engine mount wear', 'Throttle body issues']),
+    },
+    {
+      code: 'K14B',
+      brand: 'Suzuki',
+      displacement: 1373,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 95,
+      torque: 130,
+      commonVehicles: JSON.stringify(['Suzuki Swift', 'Suzuki Baleno']),
+      commonIssues: JSON.stringify(['Timing chain stretch', 'VVT problems']),
+    },
+    {
+      code: 'G15A',
+      brand: 'Suzuki',
+      displacement: 1490,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 103,
+      torque: 138,
+      commonVehicles: JSON.stringify(['Suzuki Jimny']),
+      commonIssues: JSON.stringify(['Oil consumption', 'Valve clearance']),
+    },
+
+    // Daihatsu Engines - Lengkap
+    {
+      code: '3SZ-VE',
+      brand: 'Daihatsu',
+      displacement: 1329,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 95,
+      torque: 121,
+      commonVehicles: JSON.stringify(['Daihatsu Xenia', 'Daihatsu Terios']),
+      commonIssues: JSON.stringify(['VVT-i problems', 'Oil consumption']),
+    },
+    {
+      code: '1KR-DE',
+      brand: 'Daihatsu',
+      displacement: 996,
+      cylinders: 3,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 68,
+      torque: 91,
+      commonVehicles: JSON.stringify(['Daihatsu Ayla']),
+      commonIssues: JSON.stringify(['Engine mount wear', 'Carbon buildup']),
+    },
+    {
+      code: '2NR-VE',
+      brand: 'Daihatsu',
+      displacement: 1329,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 91,
+      torque: 121,
+      commonVehicles: JSON.stringify(['Daihatsu Sigra']),
+      commonIssues: JSON.stringify(['VVT-i solenoid failure', 'Throttle body cleaning']),
+    },
+
+    // Nissan Engines - Lengkap
+    {
+      code: 'HR15DE',
+      brand: 'Nissan',
+      displacement: 1498,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 109,
+      torque: 142,
+      commonVehicles: JSON.stringify(['Nissan March', 'Nissan Livina']),
+      commonIssues: JSON.stringify(['CVT belt wear', 'Throttle body cleaning']),
+    },
+    {
+      code: 'MR20DD',
+      brand: 'Nissan',
+      displacement: 1997,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 144,
+      torque: 200,
+      commonVehicles: JSON.stringify(['Nissan X-Trail', 'Nissan Serena']),
+      commonIssues: JSON.stringify(['Direct injection carbon buildup', 'CVT issues']),
+    },
+    {
+      code: 'HR12DE',
+      brand: 'Nissan',
+      displacement: 1198,
+      cylinders: 3,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 78,
+      torque: 106,
+      commonVehicles: JSON.stringify(['Nissan March']),
+      commonIssues: JSON.stringify(['Engine mount wear', 'CVT problems']),
+    },
+    {
+      code: 'YD25DDTi',
+      brand: 'Nissan',
+      displacement: 2488,
+      cylinders: 4,
+      fuel: 'DIESEL' as const,
+      aspiration: 'TURBO' as const,
+      power: 190,
+      torque: 450,
+      commonVehicles: JSON.stringify(['Nissan Navara', 'Nissan Terra']),
+      commonIssues: JSON.stringify(['Turbo failure', 'DPF clogging']),
+    },
+    {
+      code: 'HR10DET',
+      brand: 'Nissan',
+      displacement: 999,
+      cylinders: 3,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 100,
+      torque: 152,
+      commonVehicles: JSON.stringify(['Nissan Magnite']),
+      commonIssues: JSON.stringify(['Turbo lag', 'Carbon buildup']),
+    },
+
+    // Mazda Engines - Lengkap
+    {
+      code: 'SKYACTIV-G 1.5',
+      brand: 'Mazda',
+      displacement: 1496,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 111,
+      torque: 144,
+      commonVehicles: JSON.stringify(['Mazda2', 'Mazda CX-3']),
+      commonIssues: JSON.stringify(['Carbon buildup', 'Fuel pump issues']),
+    },
+    {
+      code: 'SKYACTIV-G 2.0',
+      brand: 'Mazda',
+      displacement: 1998,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 155,
+      torque: 200,
+      commonVehicles: JSON.stringify(['Mazda3', 'Mazda CX-5']),
+      commonIssues: JSON.stringify(['Carbon buildup', 'Timing chain stretch']),
+    },
+    {
+      code: 'SKYACTIV-G 2.5T',
+      brand: 'Mazda',
+      displacement: 2488,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 231,
+      torque: 420,
+      commonVehicles: JSON.stringify(['Mazda CX-9']),
+      commonIssues: JSON.stringify(['Turbo failure', 'High fuel consumption']),
+    },
+
+    // Isuzu Engines - Lengkap
+    {
+      code: '4JJ1-TC',
+      brand: 'Isuzu',
+      displacement: 2999,
+      cylinders: 4,
+      fuel: 'DIESEL' as const,
+      aspiration: 'TURBO' as const,
+      power: 177,
+      torque: 380,
+      commonVehicles: JSON.stringify(['Isuzu MU-X', 'Isuzu D-Max']),
+      commonIssues: JSON.stringify(['Turbo failure', 'DPF clogging', 'Fuel system issues']),
+    },
+    {
+      code: '4JA1-T',
+      brand: 'Isuzu',
+      displacement: 2499,
+      cylinders: 4,
+      fuel: 'DIESEL' as const,
+      aspiration: 'TURBO' as const,
+      power: 136,
+      torque: 294,
+      commonVehicles: JSON.stringify(['Isuzu Panther']),
+      commonIssues: JSON.stringify(['Turbo failure', 'Injection pump problems']),
+    },
+
+    // Wuling Engines - Lengkap
+    {
+      code: 'L2B',
+      brand: 'Wuling',
+      displacement: 1485,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 105,
+      torque: 140,
+      commonVehicles: JSON.stringify(['Wuling Confero S']),
+      commonIssues: JSON.stringify(['Timing chain stretch', 'Oil consumption']),
+    },
+    {
+      code: 'LFV',
+      brand: 'Wuling',
+      displacement: 1485,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 140,
+      torque: 250,
+      commonVehicles: JSON.stringify(['Wuling Cortez', 'Wuling Almaz']),
+      commonIssues: JSON.stringify(['Turbo failure', 'Carbon buildup']),
+    },
+    {
+      code: 'LJ4A18Q6',
+      brand: 'Wuling',
+      displacement: 1206,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 82,
+      torque: 115,
+      commonVehicles: JSON.stringify(['Wuling Bingo']),
+      commonIssues: JSON.stringify(['Engine mount wear', 'Throttle body cleaning']),
+    },
+
+    // Hyundai Engines - Lengkap
+    {
+      code: 'Smartstream G1.5',
+      brand: 'Hyundai',
+      displacement: 1482,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 115,
+      torque: 144,
+      commonVehicles: JSON.stringify(['Hyundai Creta', 'Hyundai Stargazer']),
+      commonIssues: JSON.stringify(['Timing chain stretch', 'Oil consumption']),
+    },
+    {
+      code: 'Kappa 1.2',
+      brand: 'Hyundai',
+      displacement: 1197,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 84,
+      torque: 121,
+      commonVehicles: JSON.stringify(['Hyundai Grand i10']),
+      commonIssues: JSON.stringify(['Timing chain noise', 'Oil consumption']),
+    },
+    {
+      code: 'Nu 2.0 MPI',
+      brand: 'Hyundai',
+      displacement: 1999,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 156,
+      torque: 192,
+      commonVehicles: JSON.stringify(['Hyundai Tucson']),
+      commonIssues: JSON.stringify(['Direct injection carbon buildup']),
+    },
+    {
+      code: 'Theta II 2.4 GDI',
+      brand: 'Hyundai',
+      displacement: 2359,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 185,
+      torque: 237,
+      commonVehicles: JSON.stringify(['Hyundai Santa Fe']),
+      commonIssues: JSON.stringify(['Direct injection carbon buildup', 'Timing chain stretch']),
+    },
+
+    // KIA Engines - Lengkap
+    {
+      code: 'Smartstream G1.5 MPI',
+      brand: 'KIA',
+      displacement: 1482,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 115,
+      torque: 144,
+      commonVehicles: JSON.stringify(['KIA Seltos', 'KIA Carnival']),
+      commonIssues: JSON.stringify(['Timing chain noise', 'Throttle body cleaning']),
+    },
+    {
+      code: 'Kappa 1.2 MPI',
+      brand: 'KIA',
+      displacement: 1248,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 84,
+      torque: 122,
+      commonVehicles: JSON.stringify(['KIA Picanto']),
+      commonIssues: JSON.stringify(['Engine mount wear', 'Oil consumption']),
+    },
+    {
+      code: 'Nu 2.0 MPI',
+      brand: 'KIA',
+      displacement: 1999,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 156,
+      torque: 192,
+      commonVehicles: JSON.stringify(['KIA Sportage']),
+      commonIssues: JSON.stringify(['Carbon buildup', 'Timing chain stretch']),
+    },
+    {
+      code: 'Theta II 2.4 GDI',
+      brand: 'KIA',
+      displacement: 2359,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 185,
+      torque: 237,
+      commonVehicles: JSON.stringify(['KIA Sorento']),
+      commonIssues: JSON.stringify(['Direct injection problems', 'Oil consumption']),
+    },
+    {
+      code: 'R 2.2 CRDi',
+      brand: 'KIA',
+      displacement: 2199,
+      cylinders: 4,
+      fuel: 'DIESEL' as const,
+      aspiration: 'TURBO' as const,
+      power: 202,
+      torque: 440,
+      commonVehicles: JSON.stringify(['KIA Carnival']),
+      commonIssues: JSON.stringify(['DPF clogging', 'Turbo failure']),
+    },
+
+    // DFSK Engines
+    {
+      code: 'DK15-01',
+      brand: 'DFSK',
+      displacement: 1498,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 150,
+      torque: 220,
+      commonVehicles: JSON.stringify(['DFSK Glory 560']),
+      commonIssues: JSON.stringify(['Turbo failure', 'Oil consumption']),
+    },
+    {
+      code: 'DK15-02',
+      brand: 'DFSK',
+      displacement: 1498,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'NATURAL' as const,
+      power: 109,
+      torque: 150,
+      commonVehicles: JSON.stringify(['DFSK Supercab']),
+      commonIssues: JSON.stringify(['Timing chain stretch', 'Oil consumption']),
+    },
+
+    // MG Engines
+    {
+      code: '15S4G',
+      brand: 'MG',
+      displacement: 1498,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 169,
+      torque: 275,
+      commonVehicles: JSON.stringify(['MG ZS']),
+      commonIssues: JSON.stringify(['Turbo failure', 'Carbon buildup']),
+    },
+    {
+      code: '20T4F',
+      brand: 'MG',
+      displacement: 1991,
+      cylinders: 4,
+      fuel: 'BENSIN' as const,
+      aspiration: 'TURBO' as const,
+      power: 231,
+      torque: 370,
+      commonVehicles: JSON.stringify(['MG HS']),
+      commonIssues: JSON.stringify(['High fuel consumption', 'Turbo actuator problems']),
+    },
   ]
 
   for (const engine of engines) {
@@ -92,14 +666,30 @@ async function main() {
     })
   }
 
-  // Seed Vehicles
+  // Seed Vehicles - Lengkap dengan semua varian yang beredar di Indonesia
   const vehicles = [
-    // Toyota
+    // Toyota - Merek terpopuler di Indonesia (Lengkap)
+    {
+      brand: 'Toyota',
+      model: 'Agya',
+      variant: '1.0 E',
+      years: '2013-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
     {
       brand: 'Toyota',
       model: 'Agya',
       variant: '1.0 G',
       years: '2013-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Agya',
+      variant: '1.2 G',
+      years: '2017-2024',
       type: 'HATCHBACK' as const,
       segment: 'A',
     },
@@ -114,9 +704,33 @@ async function main() {
     {
       brand: 'Toyota',
       model: 'Yaris',
+      variant: '1.5 E',
+      years: '2014-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Yaris',
       variant: '1.5 G',
       years: '2014-2024',
       type: 'HATCHBACK' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Yaris',
+      variant: '1.5 TRD Sportivo',
+      years: '2018-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Vios',
+      variant: '1.5 E',
+      years: '2013-2024',
+      type: 'SEDAN' as const,
       segment: 'B',
     },
     {
@@ -129,13 +743,286 @@ async function main() {
     },
     {
       brand: 'Toyota',
+      model: 'Vios',
+      variant: '1.5 TRD Sportivo',
+      years: '2018-2024',
+      type: 'SEDAN' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Calya',
+      variant: '1.2 E',
+      years: '2016-2024',
+      type: 'MPV' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Toyota',
       model: 'Calya',
       variant: '1.2 G',
       years: '2016-2024',
       type: 'MPV' as const,
       segment: 'A',
     },
-    // Honda
+    {
+      brand: 'Toyota',
+      model: 'Avanza',
+      variant: '1.3 E',
+      years: '2012-2021',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Avanza',
+      variant: '1.3 G',
+      years: '2012-2021',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Avanza',
+      variant: '1.5 G',
+      years: '2022-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Veloz',
+      variant: '1.5 Q',
+      years: '2022-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Innova',
+      variant: '2.0 E',
+      years: '2012-2020',
+      type: 'MPV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Innova',
+      variant: '2.0 G',
+      years: '2012-2020',
+      type: 'MPV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Innova',
+      variant: '2.0 V',
+      years: '2012-2020',
+      type: 'MPV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Innova Zenix',
+      variant: '2.0 G',
+      years: '2022-2024',
+      type: 'MPV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Innova Zenix',
+      variant: '2.0 V',
+      years: '2022-2024',
+      type: 'MPV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Kijang Innova',
+      variant: '2.4 G Diesel',
+      years: '2016-2020',
+      type: 'MPV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Kijang Innova',
+      variant: '2.4 V Diesel',
+      years: '2016-2020',
+      type: 'MPV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Camry',
+      variant: '2.5 G',
+      years: '2012-2024',
+      type: 'SEDAN' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Camry',
+      variant: '2.5 V',
+      years: '2012-2024',
+      type: 'SEDAN' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Camry Hybrid',
+      variant: '2.5 HV',
+      years: '2019-2024',
+      type: 'SEDAN' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Rush',
+      variant: '1.5 G',
+      years: '2018-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Rush',
+      variant: '1.5 TRD Sportivo',
+      years: '2018-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Fortuner',
+      variant: '2.4 G Diesel',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Fortuner',
+      variant: '2.4 VRZ Diesel',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Fortuner',
+      variant: '2.7 SRZ',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Hilux',
+      variant: '2.4 Single Cab',
+      years: '2015-2024',
+      type: 'PICKUP' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Hilux',
+      variant: '2.4 Double Cab',
+      years: '2015-2024',
+      type: 'PICKUP' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Alphard',
+      variant: '2.5 G',
+      years: '2015-2024',
+      type: 'MPV' as const,
+      segment: 'F',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Alphard',
+      variant: '3.5 G',
+      years: '2015-2024',
+      type: 'MPV' as const,
+      segment: 'F',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Vellfire',
+      variant: '2.5 G',
+      years: '2015-2024',
+      type: 'MPV' as const,
+      segment: 'F',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Sienta',
+      variant: '1.5 E',
+      years: '2016-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Sienta',
+      variant: '1.5 G',
+      years: '2016-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Sienta',
+      variant: '1.5 V',
+      years: '2016-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'C-HR',
+      variant: '1.8 Hybrid',
+      years: '2017-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Raize',
+      variant: '1.0 Turbo G',
+      years: '2021-2024',
+      type: 'SUV' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Raize',
+      variant: '1.0 Turbo GR Sport',
+      years: '2021-2024',
+      type: 'SUV' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Corolla Cross',
+      variant: '1.8 G',
+      years: '2021-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Toyota',
+      model: 'Corolla Cross',
+      variant: '1.8 Hybrid',
+      years: '2021-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+
+    // Honda - Merek populer kedua (Lengkap)
     {
       brand: 'Honda',
       model: 'Brio',
@@ -143,6 +1030,30 @@ async function main() {
       years: '2012-2024',
       type: 'HATCHBACK' as const,
       segment: 'A',
+    },
+    {
+      brand: 'Honda',
+      model: 'Brio',
+      variant: '1.2 S',
+      years: '2012-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Honda',
+      model: 'Brio',
+      variant: '1.2 RS',
+      years: '2018-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Honda',
+      model: 'Jazz',
+      variant: '1.5 S',
+      years: '2014-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'B',
     },
     {
       brand: 'Honda',
@@ -162,11 +1073,75 @@ async function main() {
     },
     {
       brand: 'Honda',
+      model: 'City',
+      variant: '1.5 S',
+      years: '2014-2024',
+      type: 'SEDAN' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'City',
+      variant: '1.5 RS',
+      years: '2020-2024',
+      type: 'SEDAN' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'City Hatchback',
+      variant: '1.5 E',
+      years: '2021-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'City Hatchback',
+      variant: '1.5 RS',
+      years: '2021-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
       model: 'Civic',
       variant: '1.8 E',
-      years: '2012-2024',
+      years: '2012-2021',
       type: 'SEDAN' as const,
       segment: 'C',
+    },
+    {
+      brand: 'Honda',
+      model: 'Civic',
+      variant: '1.8 S',
+      years: '2012-2021',
+      type: 'SEDAN' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Honda',
+      model: 'Civic',
+      variant: '1.5 Turbo',
+      years: '2016-2021',
+      type: 'SEDAN' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Honda',
+      model: 'Civic Type R',
+      variant: '2.0 Turbo',
+      years: '2017-2021',
+      type: 'HATCHBACK' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Honda',
+      model: 'Accord',
+      variant: '1.5 Turbo',
+      years: '2019-2024',
+      type: 'SEDAN' as const,
+      segment: 'D',
     },
     {
       brand: 'Honda',
@@ -176,7 +1151,120 @@ async function main() {
       type: 'SUV' as const,
       segment: 'C',
     },
-    // Mitsubishi
+    {
+      brand: 'Honda',
+      model: 'CR-V',
+      variant: '1.5 Turbo Prestige',
+      years: '2017-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Honda',
+      model: 'CR-V',
+      variant: '2.0 i-VTEC',
+      years: '2012-2016',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Honda',
+      model: 'HR-V',
+      variant: '1.5 E',
+      years: '2015-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'HR-V',
+      variant: '1.5 S',
+      years: '2015-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'HR-V',
+      variant: '1.5 Prestige',
+      years: '2015-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'BR-V',
+      variant: '1.5 E',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'BR-V',
+      variant: '1.5 S',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'BR-V',
+      variant: '1.5 Prestige',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'Mobilio',
+      variant: '1.5 E',
+      years: '2014-2019',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'Mobilio',
+      variant: '1.5 S',
+      years: '2014-2019',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'Mobilio',
+      variant: '1.5 RS',
+      years: '2014-2019',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'WR-V',
+      variant: '1.5 E',
+      years: '2022-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Honda',
+      model: 'WR-V',
+      variant: '1.5 RS',
+      years: '2022-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+
+    // Mitsubishi - Merek populer ketiga (Lengkap)
+    {
+      brand: 'Mitsubishi',
+      model: 'Mirage',
+      variant: '1.2 GL',
+      years: '2012-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
     {
       brand: 'Mitsubishi',
       model: 'Mirage',
@@ -188,12 +1276,125 @@ async function main() {
     {
       brand: 'Mitsubishi',
       model: 'Xpander',
+      variant: '1.5 GL',
+      years: '2017-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Xpander',
+      variant: '1.5 GLS',
+      years: '2017-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Xpander',
       variant: '1.5 Ultimate',
       years: '2017-2024',
       type: 'MPV' as const,
       segment: 'B',
     },
-    // Daihatsu
+    {
+      brand: 'Mitsubishi',
+      model: 'Xpander Cross',
+      variant: '1.5 Premium',
+      years: '2020-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Pajero Sport',
+      variant: '2.4 Exceed',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Pajero Sport',
+      variant: '2.4 Dakar',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Pajero Sport',
+      variant: '2.4 Dakar Ultimate',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Outlander',
+      variant: '2.0 PX',
+      years: '2013-2021',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Outlander',
+      variant: '2.4 PX',
+      years: '2013-2021',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Eclipse Cross',
+      variant: '1.5 Turbo',
+      years: '2018-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Triton',
+      variant: '2.4 GLX',
+      years: '2015-2024',
+      type: 'PICKUP' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Triton',
+      variant: '2.4 HDX',
+      years: '2015-2024',
+      type: 'PICKUP' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Mitsubishi',
+      model: 'Triton',
+      variant: '2.4 Ultimate',
+      years: '2015-2024',
+      type: 'PICKUP' as const,
+      segment: 'D',
+    },
+
+    // Daihatsu - Merek LCGC populer (Lengkap)
+    {
+      brand: 'Daihatsu',
+      model: 'Ayla',
+      variant: '1.0 D',
+      years: '2013-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Daihatsu',
+      model: 'Ayla',
+      variant: '1.0 M',
+      years: '2013-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
     {
       brand: 'Daihatsu',
       model: 'Ayla',
@@ -204,13 +1405,94 @@ async function main() {
     },
     {
       brand: 'Daihatsu',
+      model: 'Ayla',
+      variant: '1.2 R',
+      years: '2017-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Daihatsu',
+      model: 'Sigra',
+      variant: '1.0 D',
+      years: '2016-2024',
+      type: 'MPV' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Daihatsu',
+      model: 'Sigra',
+      variant: '1.2 M',
+      years: '2016-2024',
+      type: 'MPV' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Daihatsu',
+      model: 'Sigra',
+      variant: '1.2 R',
+      years: '2016-2024',
+      type: 'MPV' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Daihatsu',
+      model: 'Xenia',
+      variant: '1.3 D',
+      years: '2012-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Daihatsu',
+      model: 'Xenia',
+      variant: '1.3 M',
+      years: '2012-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Daihatsu',
       model: 'Xenia',
       variant: '1.3 R',
       years: '2012-2024',
       type: 'MPV' as const,
       segment: 'B',
     },
-    // Suzuki
+    {
+      brand: 'Daihatsu',
+      model: 'Terios',
+      variant: '1.5 X',
+      years: '2012-2018',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Daihatsu',
+      model: 'Terios',
+      variant: '1.5 R',
+      years: '2012-2018',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Daihatsu',
+      model: 'Rocky',
+      variant: '1.0 Turbo R',
+      years: '2021-2024',
+      type: 'SUV' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Daihatsu',
+      model: 'Rocky',
+      variant: '1.0 Turbo ADS',
+      years: '2021-2024',
+      type: 'SUV' as const,
+      segment: 'A',
+    },
+
+    // Suzuki - Merek populer keempat
     {
       brand: 'Suzuki',
       model: 'Karimun Wagon R',
@@ -221,11 +1503,395 @@ async function main() {
     },
     {
       brand: 'Suzuki',
+      model: 'Swift',
+      variant: '1.4 GX',
+      years: '2012-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Suzuki',
+      model: 'Baleno',
+      variant: '1.4 AT',
+      years: '2016-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Suzuki',
       model: 'Ertiga',
       variant: '1.5 GX',
       years: '2012-2024',
       type: 'MPV' as const,
       segment: 'B',
+    },
+    {
+      brand: 'Suzuki',
+      model: 'XL7',
+      variant: '1.5 Beta',
+      years: '2020-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Suzuki',
+      model: 'Ignis',
+      variant: '1.2 GX',
+      years: '2017-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Suzuki',
+      model: 'Jimny',
+      variant: '1.5 MT',
+      years: '2019-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Suzuki',
+      model: 'Carry',
+      variant: '1.5 Pick Up',
+      years: '2012-2024',
+      type: 'PICKUP' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Suzuki',
+      model: 'Fronx',
+      variant: '1.5 Smart Hybrid',
+      years: '2023-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+
+    // Nissan - Merek Jepang populer
+    {
+      brand: 'Nissan',
+      model: 'March',
+      variant: '1.2 L',
+      years: '2012-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Nissan',
+      model: 'Livina',
+      variant: '1.5 XV',
+      years: '2019-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Nissan',
+      model: 'Grand Livina',
+      variant: '1.5 XV',
+      years: '2013-2019',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Nissan',
+      model: 'Kicks',
+      variant: '1.5 VL',
+      years: '2020-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Nissan',
+      model: 'X-Trail',
+      variant: '2.0 CVT',
+      years: '2014-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Nissan',
+      model: 'Serena',
+      variant: '2.0 Highway Star',
+      years: '2013-2024',
+      type: 'MPV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Nissan',
+      model: 'Navara',
+      variant: '2.5 VL',
+      years: '2015-2024',
+      type: 'PICKUP' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Nissan',
+      model: 'Terra',
+      variant: '2.5 VL',
+      years: '2018-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Nissan',
+      model: 'Magnite',
+      variant: '1.0 Turbo CVT',
+      years: '2022-2024',
+      type: 'SUV' as const,
+      segment: 'A',
+    },
+
+    // Mazda - Merek premium Jepang
+    {
+      brand: 'Mazda',
+      model: 'Mazda2',
+      variant: '1.5 R',
+      years: '2014-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Mazda',
+      model: 'Mazda3',
+      variant: '2.0 L',
+      years: '2014-2024',
+      type: 'SEDAN' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Mazda',
+      model: 'CX-3',
+      variant: '2.0 L',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Mazda',
+      model: 'CX-5',
+      variant: '2.0 L',
+      years: '2012-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Mazda',
+      model: 'CX-9',
+      variant: '2.5 Turbo',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'E',
+    },
+    {
+      brand: 'Mazda',
+      model: 'Biante',
+      variant: '2.0 L',
+      years: '2012-2018',
+      type: 'MPV' as const,
+      segment: 'C',
+    },
+
+    // Isuzu - Merek komersial populer
+    {
+      brand: 'Isuzu',
+      model: 'D-Max',
+      variant: '2.5 4x4',
+      years: '2012-2024',
+      type: 'PICKUP' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Isuzu',
+      model: 'MU-X',
+      variant: '2.5 4x4',
+      years: '2014-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Isuzu',
+      model: 'Panther',
+      variant: '2.5 Grand Touring',
+      years: '2012-2020',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+
+    // Hyundai - Merek Korea populer
+    {
+      brand: 'Hyundai',
+      model: 'Grand i10',
+      variant: '1.2 GL',
+      years: '2014-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Hyundai',
+      model: 'Tucson',
+      variant: '2.0 GLS',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Hyundai',
+      model: 'Santa Fe',
+      variant: '2.4 GLS',
+      years: '2013-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'Hyundai',
+      model: 'Creta',
+      variant: '1.5 Prime',
+      years: '2021-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Hyundai',
+      model: 'Stargazer',
+      variant: '1.5 Prime',
+      years: '2022-2024',
+      type: 'MPV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'Hyundai',
+      model: 'Ioniq 5',
+      variant: 'Prime Long Range',
+      years: '2022-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+
+    // KIA - Merek Korea sister Hyundai
+    {
+      brand: 'KIA',
+      model: 'Picanto',
+      variant: '1.2 SE',
+      years: '2012-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'KIA',
+      model: 'Sportage',
+      variant: '2.0 LX',
+      years: '2016-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'KIA',
+      model: 'Sorento',
+      variant: '2.4 LX',
+      years: '2015-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+    {
+      brand: 'KIA',
+      model: 'Seltos',
+      variant: '1.5 LX',
+      years: '2020-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'KIA',
+      model: 'Carnival',
+      variant: '2.2 Diesel',
+      years: '2021-2024',
+      type: 'MPV' as const,
+      segment: 'E',
+    },
+    {
+      brand: 'KIA',
+      model: 'EV6',
+      variant: 'GT-Line AWD',
+      years: '2022-2024',
+      type: 'SUV' as const,
+      segment: 'D',
+    },
+
+    // Wuling - Merek China yang populer di Indonesia
+    {
+      brand: 'Wuling',
+      model: 'Confero S',
+      variant: '1.5 L',
+      years: '2017-2024',
+      type: 'MPV' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Wuling',
+      model: 'Cortez',
+      variant: '1.5 Turbo',
+      years: '2018-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Wuling',
+      model: 'Almaz',
+      variant: '1.5 Turbo',
+      years: '2019-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+    {
+      brand: 'Wuling',
+      model: 'Air ev',
+      variant: 'Long Range',
+      years: '2022-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+    {
+      brand: 'Wuling',
+      model: 'Bingo',
+      variant: '1.2 L',
+      years: '2023-2024',
+      type: 'HATCHBACK' as const,
+      segment: 'A',
+    },
+
+    // DFSK - Merek China yang resmi di Indonesia
+    {
+      brand: 'DFSK',
+      model: 'Supercab',
+      variant: '1.5 L',
+      years: '2018-2024',
+      type: 'PICKUP' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'DFSK',
+      model: 'Glory 560',
+      variant: '1.5 Turbo',
+      years: '2018-2024',
+      type: 'SUV' as const,
+      segment: 'C',
+    },
+
+    // MG - Merek China (SAIC) yang resmi di Indonesia
+    {
+      brand: 'MG',
+      model: 'ZS',
+      variant: '1.5 Excite',
+      years: '2020-2024',
+      type: 'SUV' as const,
+      segment: 'B',
+    },
+    {
+      brand: 'MG',
+      model: 'HS',
+      variant: '2.0 Turbo',
+      years: '2021-2024',
+      type: 'SUV' as const,
+      segment: 'C',
     },
   ]
 
@@ -242,252 +1908,133 @@ async function main() {
     })
   }
 
-  // Seed DTC Codes
-  const dtcCodes = [
-    {
-      code: 'P0100',
-      system: 'ENGINE' as const,
-      subsystem: 'Air Flow',
-      description: 'Mass or Volume Air Flow Circuit Malfunction',
-      descriptionIndonesian: 'Kerusakan Sirkuit Sensor Aliran Udara (MAF/VAF)',
-      severity: 'MEDIUM' as const,
-      symptoms: JSON.stringify([
-        'Mesin tersendat saat akselerasi',
-        'Konsumsi bahan bakar boros',
-        'Mesin tidak stabil saat idle',
-        'Lampu check engine menyala'
-      ]),
-      possibleCauses: JSON.stringify([
-        'Sensor MAF kotor atau rusak',
-        'Kabel sensor MAF putus atau korosi',
-        'Kebocoran udara setelah sensor MAF',
-        'ECU rusak'
-      ]),
-      diagnosticSteps: JSON.stringify([
-        'Periksa kabel dan konektor sensor MAF',
-        'Bersihkan sensor MAF dengan cleaner khusus',
-        'Periksa kebocoran udara pada intake manifold',
-        'Test sensor MAF dengan multimeter',
-        'Ganti sensor MAF jika rusak'
-      ]),
-      repairProcedures: JSON.stringify([
-        'Matikan mesin dan lepas kunci kontak',
-        'Lepas konektor sensor MAF',
-        'Lepas sensor MAF dari housing',
-        'Bersihkan dengan MAF cleaner',
-        'Pasang kembali dan test'
-      ]),
-    },
-    {
-      code: 'P0171',
-      system: 'ENGINE' as const,
-      subsystem: 'Fuel System',
-      description: 'System Too Lean (Bank 1)',
-      descriptionIndonesian: 'Sistem Bahan Bakar Terlalu Kurus (Bank 1)',
-      severity: 'MEDIUM' as const,
-      symptoms: JSON.stringify([
-        'Mesin tersendat atau mati mendadak',
-        'Konsumsi bahan bakar boros',
-        'Mesin sulit hidup',
-        'Performa mesin menurun'
-      ]),
-      possibleCauses: JSON.stringify([
-        'Kebocoran udara pada intake manifold',
-        'Sensor MAF kotor atau rusak',
-        'Fuel injector tersumbat',
-        'Fuel pump lemah',
-        'Sensor O2 rusak'
-      ]),
-      diagnosticSteps: JSON.stringify([
-        'Periksa kebocoran udara dengan smoke test',
-        'Test tekanan bahan bakar',
-        'Periksa sensor MAF dan O2',
-        'Test fuel injector',
-        'Scan data live ECU'
-      ]),
-      repairProcedures: JSON.stringify([
-        'Perbaiki kebocoran udara jika ada',
-        'Bersihkan atau ganti sensor MAF',
-        'Bersihkan fuel injector',
-        'Ganti fuel filter',
-        'Reset ECU dan test drive'
-      ]),
-    },
-    {
-      code: 'P0300',
-      system: 'ENGINE' as const,
-      subsystem: 'Ignition System',
-      description: 'Random/Multiple Cylinder Misfire Detected',
-      descriptionIndonesian: 'Terdeteksi Misfire pada Beberapa Silinder',
-      severity: 'HIGH' as const,
-      symptoms: JSON.stringify([
-        'Mesin bergetar kasar',
-        'Tenaga mesin berkurang drastis',
-        'Mesin tersendat saat akselerasi',
-        'Suara mesin tidak normal',
-        'Lampu check engine berkedip'
-      ]),
-      possibleCauses: JSON.stringify([
-        'Busi aus atau kotor',
-        'Koil pengapian rusak',
-        'Fuel injector tersumbat',
-        'Kompresi mesin rendah',
-        'Timing belt/chain melompat'
-      ]),
-      diagnosticSteps: JSON.stringify([
-        'Periksa kondisi busi semua silinder',
-        'Test koil pengapian dengan oscilloscope',
-        'Test kompresi mesin',
-        'Periksa timing belt/chain',
-        'Test fuel injector'
-      ]),
-      repairProcedures: JSON.stringify([
-        'Ganti busi yang aus',
-        'Ganti koil pengapian yang rusak',
-        'Bersihkan atau ganti fuel injector',
-        'Perbaiki timing jika melompat',
-        'Overhaul mesin jika kompresi rendah'
-      ]),
-    },
+  // Seed VehicleEngine relationships - Hanya untuk kendaraan yang ada di Indonesia
+  const vehicleEngineRelations = [
+    // Toyota relationships
+    { vehicleBrand: 'Toyota', vehicleModel: 'Agya', engineCode: '1KR-VE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Agya', engineCode: '2NR-FE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Yaris', engineCode: '1NZ-FE', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Vios', engineCode: '1NZ-FE', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Calya', engineCode: '2NR-FE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Avanza', engineCode: '2NR-FE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Veloz', engineCode: '2NR-FE', transmissions: ['CVT'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Innova', engineCode: '2GR-FE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Innova Zenix', engineCode: '2GR-FE', transmissions: ['CVT'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Kijang Innova', engineCode: '1GD-FTV', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Camry', engineCode: '2GR-FE', transmissions: ['Otomatis (AT)'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Fortuner', engineCode: '1GD-FTV', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Hilux', engineCode: '1GD-FTV', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Alphard', engineCode: '2GR-FE', transmissions: ['CVT'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Vellfire', engineCode: '2GR-FE', transmissions: ['CVT'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Sienta', engineCode: '1NZ-FE', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Toyota', vehicleModel: 'Rush', engineCode: '2NR-FE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+
+    // Honda relationships
+    { vehicleBrand: 'Honda', vehicleModel: 'Brio', engineCode: 'L15A7', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'Jazz', engineCode: 'L15A7', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'City', engineCode: 'L15A7', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'City Hatchback', engineCode: 'L15A7', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'Civic', engineCode: 'R18A1', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'Civic', engineCode: 'L15B7', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'Accord', engineCode: 'L15B7', transmissions: ['CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'CR-V', engineCode: 'R18A1', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'CR-V', engineCode: 'L15B7', transmissions: ['CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'HR-V', engineCode: 'L15A7', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'BR-V', engineCode: 'L15A7', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Honda', vehicleModel: 'Mobilio', engineCode: 'L15A7', transmissions: ['Manual (MT)', 'CVT'] },
+
+    // Mitsubishi relationships
+    { vehicleBrand: 'Mitsubishi', vehicleModel: 'Mirage', engineCode: '4A91', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Mitsubishi', vehicleModel: 'Xpander', engineCode: '4A91', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Mitsubishi', vehicleModel: 'Xpander Cross', engineCode: '4A91', transmissions: ['CVT'] },
+    { vehicleBrand: 'Mitsubishi', vehicleModel: 'Pajero Sport', engineCode: '4N15', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Mitsubishi', vehicleModel: 'Triton', engineCode: '4N15', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+
+    // Daihatsu relationships
+    { vehicleBrand: 'Daihatsu', vehicleModel: 'Ayla', engineCode: '1KR-VE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Daihatsu', vehicleModel: 'Sigra', engineCode: '2NR-FE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Daihatsu', vehicleModel: 'Xenia', engineCode: '3SZ-VE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Daihatsu', vehicleModel: 'Terios', engineCode: '3SZ-VE', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+
+    // Suzuki relationships
+    { vehicleBrand: 'Suzuki', vehicleModel: 'Karimun Wagon R', engineCode: 'K10B', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Suzuki', vehicleModel: 'Swift', engineCode: 'K15B', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Suzuki', vehicleModel: 'Baleno', engineCode: 'K15B', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Suzuki', vehicleModel: 'Ertiga', engineCode: 'K15B', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Suzuki', vehicleModel: 'XL7', engineCode: 'K15B', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Suzuki', vehicleModel: 'Ignis', engineCode: 'K10B', transmissions: ['Manual (MT)', 'CVT'] },
+
+    // Nissan relationships
+    { vehicleBrand: 'Nissan', vehicleModel: 'March', engineCode: 'HR15DE', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Nissan', vehicleModel: 'Livina', engineCode: 'HR15DE', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Nissan', vehicleModel: 'Grand Livina', engineCode: 'HR15DE', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Nissan', vehicleModel: 'X-Trail', engineCode: 'MR20DD', transmissions: ['CVT'] },
+    { vehicleBrand: 'Nissan', vehicleModel: 'Serena', engineCode: 'MR20DD', transmissions: ['CVT'] },
+
+    // Mazda relationships
+    { vehicleBrand: 'Mazda', vehicleModel: 'Mazda2', engineCode: 'SKYACTIV-G 1.5', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Mazda', vehicleModel: 'Mazda3', engineCode: 'SKYACTIV-G 2.0', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Mazda', vehicleModel: 'CX-3', engineCode: 'SKYACTIV-G 1.5', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Mazda', vehicleModel: 'CX-5', engineCode: 'SKYACTIV-G 2.0', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+
+    // Isuzu relationships
+    { vehicleBrand: 'Isuzu', vehicleModel: 'D-Max', engineCode: '4JJ1-TC', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+    { vehicleBrand: 'Isuzu', vehicleModel: 'MU-X', engineCode: '4JJ1-TC', transmissions: ['Manual (MT)', 'Otomatis (AT)'] },
+
+    // Wuling relationships
+    { vehicleBrand: 'Wuling', vehicleModel: 'Confero S', engineCode: 'L2B', transmissions: ['Manual (MT)'] },
+    { vehicleBrand: 'Wuling', vehicleModel: 'Cortez', engineCode: 'LFV', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Wuling', vehicleModel: 'Almaz', engineCode: 'LFV', transmissions: ['CVT'] },
+
+    // Hyundai relationships
+    { vehicleBrand: 'Hyundai', vehicleModel: 'Creta', engineCode: 'Smartstream G1.5', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'Hyundai', vehicleModel: 'Stargazer', engineCode: 'Smartstream G1.5', transmissions: ['Manual (MT)', 'CVT'] },
+
+    // KIA relationships
+    { vehicleBrand: 'KIA', vehicleModel: 'Seltos', engineCode: 'Smartstream G1.5 MPI', transmissions: ['Manual (MT)', 'CVT'] },
+    { vehicleBrand: 'KIA', vehicleModel: 'Carnival', engineCode: 'Smartstream G1.5 MPI', transmissions: ['Otomatis (AT)'] },
   ]
 
-  for (const dtc of dtcCodes) {
-    await prisma.dTCCode.upsert({
-      where: { code: dtc.code },
-      update: {},
-      create: dtc,
-    })
+  // Create VehicleEngine relationships
+  for (const relation of vehicleEngineRelations) {
+    try {
+      // Find vehicle
+      const vehicle = await prisma.vehicle.findFirst({
+        where: {
+          brand: relation.vehicleBrand,
+          model: relation.vehicleModel
+        }
+      })
+
+      // Find engine
+      const engine = await prisma.engine.findUnique({
+        where: { code: relation.engineCode }
+      })
+
+      if (vehicle && engine) {
+        await prisma.vehicleEngine.upsert({
+          where: {
+            vehicleId_engineId: {
+              vehicleId: vehicle.id,
+              engineId: engine.id
+            }
+          },
+          update: {
+            transmissions: JSON.stringify(relation.transmissions)
+          },
+          create: {
+            vehicleId: vehicle.id,
+            engineId: engine.id,
+            transmissions: JSON.stringify(relation.transmissions)
+          }
+        })
+      }
+    } catch (error) {
+      console.log(`Skipping relation for ${relation.vehicleBrand} ${relation.vehicleModel} - ${relation.engineCode}`)
+    }
   }
 
-  // Seed Sensors
-  const sensors = [
-    {
-      name: 'Mass Air Flow Sensor',
-      nameIndonesian: 'Sensor Aliran Udara Massa (MAF)',
-      type: 'MAF' as const,
-      location: 'Antara air filter dan throttle body',
-      specifications: JSON.stringify({
-        voltage: '0.5-4.5V',
-        resistance: '2-3 ohm',
-        frequency: '30-150 Hz'
-      }),
-      testingProcedure: 'Gunakan multimeter untuk mengukur tegangan output sensor saat mesin idle dan saat digas',
-      expectedValues: JSON.stringify([
-        { condition: 'Idle', value: '1.0-1.5V' },
-        { condition: 'Digas', value: '3.0-4.0V' }
-      ]),
-      commonFailures: JSON.stringify([
-        'Sensor kotor karena debu',
-        'Elemen sensor rusak',
-        'Kabel putus atau korosi'
-      ]),
-    },
-    {
-      name: 'Oxygen Sensor',
-      nameIndonesian: 'Sensor Oksigen (O2)',
-      type: 'OXYGEN' as const,
-      location: 'Pada exhaust manifold sebelum catalytic converter',
-      specifications: JSON.stringify({
-        voltage: '0.1-0.9V',
-        response_time: '<100ms',
-        operating_temp: '300-800°C'
-      }),
-      testingProcedure: 'Ukur tegangan output sensor dengan multimeter saat mesin panas',
-      expectedValues: JSON.stringify([
-        { condition: 'Lean mixture', value: '0.1-0.3V' },
-        { condition: 'Rich mixture', value: '0.7-0.9V' }
-      ]),
-      commonFailures: JSON.stringify([
-        'Sensor terkontaminasi oli',
-        'Elemen sensor aus',
-        'Kabel rusak karena panas'
-      ]),
-    },
-  ]
-
-  for (const sensor of sensors) {
-    await prisma.sensor.upsert({
-      where: { 
-        id: sensor.name.toLowerCase().replace(/\s+/g, '-')
-      },
-      update: {},
-      create: {
-        id: sensor.name.toLowerCase().replace(/\s+/g, '-'),
-        ...sensor,
-      },
-    })
-  }
-
-  // Seed Actuators
-  const actuators = [
-    {
-      name: 'Fuel Injector',
-      nameIndonesian: 'Injektor Bahan Bakar',
-      type: 'INJECTOR' as const,
-      location: 'Pada intake manifold setiap silinder',
-      specifications: JSON.stringify({
-        resistance: '12-16 ohm',
-        flow_rate: '200-400 cc/min',
-        pressure: '3.5 bar'
-      }),
-      testingProcedure: 'Test resistansi dengan multimeter dan flow rate dengan injector tester',
-      operationalParameters: JSON.stringify([
-        { parameter: 'Pulse width', range: '2-15 ms' },
-        { parameter: 'Duty cycle', range: '10-90%' }
-      ]),
-      controlSignals: JSON.stringify([
-        'PWM signal dari ECU',
-        '12V power supply',
-        'Ground signal'
-      ]),
-      commonFailures: JSON.stringify([
-        'Injector tersumbat',
-        'Coil injector putus',
-        'O-ring bocor'
-      ]),
-    },
-    {
-      name: 'Ignition Coil',
-      nameIndonesian: 'Koil Pengapian',
-      type: 'IGNITION_COIL' as const,
-      location: 'Di atas busi (coil on plug) atau di engine bay',
-      specifications: JSON.stringify({
-        primary_resistance: '0.5-2.0 ohm',
-        secondary_resistance: '8000-15000 ohm',
-        output_voltage: '25000-40000V'
-      }),
-      testingProcedure: 'Test resistansi primer dan sekunder dengan multimeter',
-      operationalParameters: JSON.stringify([
-        { parameter: 'Dwell time', range: '2-8 ms' },
-        { parameter: 'Spark duration', range: '1-2 ms' }
-      ]),
-      controlSignals: JSON.stringify([
-        'Trigger signal dari ECU',
-        '12V power supply',
-        'Ground signal'
-      ]),
-      commonFailures: JSON.stringify([
-        'Coil primer putus',
-        'Coil sekunder putus',
-        'Isolasi rusak karena panas'
-      ]),
-    },
-  ]
-
-  for (const actuator of actuators) {
-    await prisma.actuator.upsert({
-      where: { 
-        id: actuator.name.toLowerCase().replace(/\s+/g, '-')
-      },
-      update: {},
-      create: {
-        id: actuator.name.toLowerCase().replace(/\s+/g, '-'),
-        ...actuator,
-      },
-    })
-  }
-
-  console.log('Seeding selesai!')
+  console.log('Seeding selesai! Hanya kendaraan yang resmi beredar di Indonesia.')
 }
 
 main()

@@ -897,7 +897,7 @@ export const P1_MAZDA_SPECIFIC: DTCDataItem[] = [
 
 export const P1_DAIHATSU_SPECIFIC: DTCDataItem[] = [
   {
-    code: 'P1300',
+    code: 'P1301',
     system: 'P1',
     subsystem: 'Daihatsu Specific',
     description: 'Igniter Circuit Malfunction (Daihatsu)',
