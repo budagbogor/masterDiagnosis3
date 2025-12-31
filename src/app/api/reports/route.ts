@@ -132,9 +132,9 @@ export async function POST(request: NextRequest) {
     let currentPage = 1
     let yPos = 20
 
-    // Helper function to check page break
+    // Helper function to check page break with footer space
     const checkPageBreak = (requiredSpace: number) => {
-      if (yPos + requiredSpace > 270) {
+      if (yPos + requiredSpace > 250) { // Leave more space for footer
         pdf.addPage()
         currentPage++
         yPos = 20
@@ -143,9 +143,14 @@ export async function POST(request: NextRequest) {
       return false
     }
 
-    // Helper function to add professional block
+    // Helper function to add professional block with better spacing
     const addBlock = (title: string, content: any, color: [number, number, number] = [59, 130, 246]) => {
-      checkPageBreak(25)
+      const estimatedHeight = typeof content === 'string' ? 
+        Math.max(pdf.splitTextToSize(content, 170).length * 4 + 20, 30) :
+        content.type === 'grid' ? Math.ceil(content.items.length / 2) * 12 + 25 :
+        content.type === 'list' ? content.items.length * 4 + 25 : 30
+      
+      checkPageBreak(estimatedHeight)
       
       // Block header with gradient effect
       pdf.setFillColor(color[0], color[1], color[2])
@@ -159,9 +164,14 @@ export async function POST(request: NextRequest) {
       
       yPos += 15
       
-      // Content area
+      // Content area with dynamic height
+      const contentHeight = typeof content === 'string' ? 
+        Math.max(pdf.splitTextToSize(content, 170).length * 4 + 12, 25) :
+        content.type === 'grid' ? Math.ceil(content.items.length / 2) * 12 + 12 :
+        content.type === 'list' ? content.items.length * 4 + 12 : 25
+      
       pdf.setFillColor(248, 250, 252)
-      pdf.roundedRect(15, yPos, 180, content.height || 20, 2, 2, 'F')
+      pdf.roundedRect(15, yPos, 180, contentHeight, 2, 2, 'F')
       
       // Content
       pdf.setTextColor(51, 65, 85)
@@ -171,7 +181,7 @@ export async function POST(request: NextRequest) {
       if (typeof content === 'string') {
         const lines = pdf.splitTextToSize(content, 170)
         pdf.text(lines, 20, yPos + 6)
-        yPos += Math.max(lines.length * 4 + 8, 20)
+        yPos += lines.length * 4 + 12
       } else if (content.type === 'grid') {
         content.items.forEach((item: any, index: number) => {
           const xOffset = (index % 2) * 90
@@ -179,17 +189,19 @@ export async function POST(request: NextRequest) {
           pdf.setFont('helvetica', 'bold')
           pdf.text(item.label + ':', 20 + xOffset, yPos + 6 + yOffset)
           pdf.setFont('helvetica', 'normal')
-          pdf.text(item.value, 20 + xOffset + 35, yPos + 6 + yOffset)
+          const valueText = pdf.splitTextToSize(item.value, 50)
+          pdf.text(valueText, 20 + xOffset + 35, yPos + 6 + yOffset)
         })
-        yPos += Math.ceil(content.items.length / 2) * 12 + 8
+        yPos += Math.ceil(content.items.length / 2) * 12 + 12
       } else if (content.type === 'list') {
         content.items.forEach((item: string, index: number) => {
-          pdf.text(`• ${item}`, 20, yPos + 6 + (index * 4))
+          const itemLines = pdf.splitTextToSize(`• ${item}`, 170)
+          pdf.text(itemLines, 20, yPos + 6 + (index * 4))
         })
-        yPos += content.items.length * 4 + 8
+        yPos += content.items.length * 4 + 12
       }
       
-      yPos += 5
+      yPos += 8 // Extra spacing between blocks
       pdf.setTextColor(0, 0, 0)
     }
 
@@ -249,18 +261,38 @@ export async function POST(request: NextRequest) {
     
     yPos += 45
 
-    // VEHICLE INFO BLOCK
-    addBlock('INFORMASI KENDARAAN', {
+    // VEHICLE INFO BLOCK - MORE DETAILED
+    const vehicleDetails = [
+      { label: 'Merek', value: diagnosis.brand },
+      { label: 'Model', value: diagnosis.model },
+      { label: 'Tahun', value: diagnosis.year.toString() },
+      { label: 'Kode Mesin', value: diagnosis.engineCode },
+      { label: 'Transmisi', value: diagnosis.transmission },
+      { label: 'Kilometer', value: `${diagnosis.mileage.toLocaleString('id-ID')} km` },
+      { label: 'VIN', value: diagnosis.vin || 'Tidak tersedia' },
+      { label: 'Tanggal Service Terakhir', value: diagnosis.lastServiceDate || 'Tidak tersedia' }
+    ]
+    
+    addBlock('INFORMASI KENDARAAN DETAIL', {
       type: 'grid',
-      items: [
-        { label: 'Merek', value: diagnosis.brand },
-        { label: 'Model', value: diagnosis.model },
-        { label: 'Tahun', value: diagnosis.year },
-        { label: 'Mesin', value: diagnosis.engineCode },
-        { label: 'Transmisi', value: diagnosis.transmission },
-        { label: 'Kilometer', value: `${diagnosis.mileage.toLocaleString('id-ID')} km` }
-      ]
+      items: vehicleDetails
     }, [34, 197, 94]) // emerald-600
+
+    // SERVICE HISTORY DETAIL
+    const partsReplaced = JSON.parse(diagnosis.partsReplaced || '[]')
+    const modifications = JSON.parse(diagnosis.modifications || '[]')
+    
+    if (partsReplaced.length > 0 || modifications.length > 0) {
+      const serviceHistory = [
+        ...partsReplaced.map((part: string) => `Parts Diganti: ${part}`),
+        ...modifications.map((mod: string) => `Modifikasi: ${mod}`)
+      ]
+      
+      addBlock('RIWAYAT SERVICE & MODIFIKASI', {
+        type: 'list',
+        items: serviceHistory
+      }, [168, 85, 247]) // purple-500
+    }
 
     // AI ANALYSIS METRICS
     const metrics = [
@@ -288,7 +320,7 @@ export async function POST(request: NextRequest) {
       [220, 38, 127] // pink-600
     )
 
-    // COMPLAINT & SYMPTOMS BLOCK
+    // COMPLAINT & SYMPTOMS BLOCK - MORE DETAILED
     const allSymptoms = [
       ...symptoms.sounds.filter(s => !s.includes('Tidak ada')),
       ...symptoms.vibrations.filter(s => !s.includes('Tidak ada')),
@@ -297,10 +329,31 @@ export async function POST(request: NextRequest) {
       ...symptoms.conditions.filter(s => !s.includes('Tidak ada'))
     ]
 
-    addBlock('KELUHAN & GEJALA', {
-      type: 'list',
-      items: [diagnosis.complaint, ...allSymptoms.slice(0, 6)]
-    }, [168, 85, 247]) // purple-600
+    addBlock('KELUHAN UTAMA', diagnosis.complaint, [220, 38, 127]) // pink-600
+
+    if (allSymptoms.length > 0) {
+      addBlock('GEJALA YANG DILAPORKAN', {
+        type: 'list',
+        items: allSymptoms
+      }, [168, 85, 247]) // purple-600
+    }
+
+    // ADDITIONAL NOTES
+    if (diagnosis.additionalNotes) {
+      addBlock('CATATAN TAMBAHAN', diagnosis.additionalNotes, [99, 102, 241]) // indigo-500
+    }
+
+    // VISUAL INSPECTION & TEST RESULTS
+    if (diagnosis.visualInspection || diagnosis.testDriveNotes) {
+      const inspectionData = []
+      if (diagnosis.visualInspection) inspectionData.push(`Visual Inspection: ${diagnosis.visualInspection}`)
+      if (diagnosis.testDriveNotes) inspectionData.push(`Test Drive: ${diagnosis.testDriveNotes}`)
+      
+      addBlock('HASIL INSPEKSI & TEST', {
+        type: 'list',
+        items: inspectionData
+      }, [16, 185, 129]) // green-600
+    }
 
     // DTC CODES BLOCK (if any)
     const errorCodes = JSON.parse(diagnosis.errorCodes || '[]')
@@ -311,39 +364,65 @@ export async function POST(request: NextRequest) {
       }, [239, 68, 68]) // red-500
     }
 
-    // DIAGNOSTIC STEPS COMPACT
-    addBlock('LANGKAH DIAGNOSA', {
+    // DIAGNOSTIC STEPS - DETAILED VERSION
+    addBlock('LANGKAH DIAGNOSA DETAIL', {
       type: 'list',
-      items: aiAnalysis.diagnosticSteps.slice(0, 4).map((step: any) => 
-        `${step.step}. ${step.title}: ${step.expectedResult}`
+      items: aiAnalysis.diagnosticSteps.map((step: any) => 
+        `STEP ${step.step}: ${step.title}\n   Deskripsi: ${step.description}\n   Expected Result: ${step.expectedResult}\n   Tools: ${step.tools.join(', ')}`
       )
     }, [16, 185, 129]) // green-600
 
-    // REPAIR PROCEDURES COMPACT
-    if (aiAnalysis.repairProcedures && aiAnalysis.repairProcedures.length > 0) {
-      const mainProcedure = aiAnalysis.repairProcedures[0]
-      
-      addBlock('PROSEDUR PERBAIKAN UTAMA', 
-        `${mainProcedure.title}\n\nEstimasi: ${mainProcedure.estimatedTime} menit | Kesulitan: ${mainProcedure.difficultyLevel}\n\nLangkah utama:\n${mainProcedure.steps.slice(0, 3).map((step: string, i: number) => `${i+1}. ${step}`).join('\n')}`,
-        [147, 51, 234] // purple-600
+    // THEORY EXPLANATION - DETAILED
+    if (aiAnalysis.theoryExplanation) {
+      addBlock('PENJELASAN TEORI TEKNIS', 
+        aiAnalysis.theoryExplanation,
+        [99, 102, 241] // indigo-500
       )
+    }
 
-      // Parts & Tools in compact grid
-      if (mainProcedure.requiredParts && mainProcedure.requiredParts.length > 0) {
-        addBlock('PARTS & TOOLS DIPERLUKAN', {
-          type: 'grid',
-          items: [
-            ...mainProcedure.requiredParts.slice(0, 4).map((part: any) => ({
+    // REPAIR PROCEDURES - DETAILED VERSION
+    if (aiAnalysis.repairProcedures && aiAnalysis.repairProcedures.length > 0) {
+      aiAnalysis.repairProcedures.forEach((procedure: any, index: number) => {
+        addBlock(`PROSEDUR PERBAIKAN ${index + 1}: ${procedure.title}`, 
+          `Deskripsi: ${procedure.description}\n\nTingkat Kesulitan: ${procedure.difficultyLevel}\nEstimasi Waktu: ${procedure.estimatedTime} menit\n\nLangkah-langkah Detail:\n${procedure.steps.map((step: string, i: number) => `${i+1}. ${step}`).join('\n')}`,
+          [147, 51, 234] // purple-600
+        )
+
+        // Safety Precautions
+        if (procedure.safetyPrecautions && procedure.safetyPrecautions.length > 0) {
+          addBlock(`KESELAMATAN KERJA - ${procedure.title}`, {
+            type: 'list',
+            items: procedure.safetyPrecautions
+          }, [239, 68, 68]) // red-500
+        }
+
+        // Quality Checks
+        if (procedure.qualityChecks && procedure.qualityChecks.length > 0) {
+          addBlock(`QUALITY CONTROL - ${procedure.title}`, {
+            type: 'list',
+            items: procedure.qualityChecks
+          }, [34, 197, 94]) // green-500
+        }
+
+        // Required Parts Detail
+        if (procedure.requiredParts && procedure.requiredParts.length > 0) {
+          addBlock(`PARTS DIPERLUKAN - ${procedure.title}`, {
+            type: 'grid',
+            items: procedure.requiredParts.map((part: any) => ({
               label: part.name,
-              value: `Rp ${part.estimatedPrice.toLocaleString('id-ID')}`
-            })),
-            ...mainProcedure.requiredTools.slice(0, 2).map((tool: string) => ({
-              label: 'Tool',
-              value: tool
+              value: `${part.partNumber || 'N/A'} - Rp ${part.estimatedPrice.toLocaleString('id-ID')}`
             }))
-          ]
-        }, [245, 158, 11]) // amber-500
-      }
+          }, [245, 158, 11]) // amber-500
+        }
+
+        // Required Tools Detail
+        if (procedure.requiredTools && procedure.requiredTools.length > 0) {
+          addBlock(`TOOLS DIPERLUKAN - ${procedure.title}`, {
+            type: 'list',
+            items: procedure.requiredTools
+          }, [168, 85, 247]) // purple-500
+        }
+      })
     }
 
     // COST ANALYSIS COMPACT
@@ -366,15 +445,51 @@ export async function POST(request: NextRequest) {
     ]
     addMetricsRow(costMetrics)
 
-    // SECONDARY CAUSES COMPACT
+    // SECONDARY CAUSES - DETAILED VERSION
     if (aiAnalysis.secondaryCauses && aiAnalysis.secondaryCauses.length > 0) {
-      addBlock('KEMUNGKINAN PENYEBAB LAIN', {
+      addBlock('KEMUNGKINAN PENYEBAB ALTERNATIF', {
         type: 'list',
-        items: aiAnalysis.secondaryCauses.slice(0, 3).map((cause: any) => 
-          `${cause.component} (${Math.round(cause.probability * 100)}%) - ${cause.description.substring(0, 80)}...`
+        items: aiAnalysis.secondaryCauses.map((cause: any) => 
+          `${cause.component} (Probabilitas: ${Math.round(cause.probability * 100)}%)\nDeskripsi: ${cause.description}\nKompleksitas: ${cause.repairComplexity}\nEstimasi Biaya: Rp ${cause.estimatedCost.min.toLocaleString('id-ID')} - Rp ${cause.estimatedCost.max.toLocaleString('id-ID')}`
         )
       }, [251, 146, 60]) // orange-500
     }
+
+    // DETAILED COST BREAKDOWN
+    addBlock('ANALISIS BIAYA DETAIL', {
+      type: 'grid',
+      items: [
+        { label: 'Biaya Parts', value: `Rp ${aiAnalysis.estimatedTotalCost.parts.toLocaleString('id-ID')}` },
+        { label: 'Biaya Labor', value: `Rp ${aiAnalysis.estimatedTotalCost.labor.toLocaleString('id-ID')}` },
+        { label: 'Total Estimasi', value: `Rp ${aiAnalysis.estimatedTotalCost.total.toLocaleString('id-ID')}` },
+        { label: 'Primary Cause Min', value: `Rp ${aiAnalysis.primaryCause.estimatedCost.min.toLocaleString('id-ID')}` },
+        { label: 'Primary Cause Max', value: `Rp ${aiAnalysis.primaryCause.estimatedCost.max.toLocaleString('id-ID')}` },
+        { label: 'Confidence Level', value: `${Math.round(aiAnalysis.confidence * 100)}%` }
+      ]
+    }, [34, 197, 94]) // green-500
+
+    // SYMPTOMS CORRELATION DETAIL
+    if (aiAnalysis.primaryCause.symptoms && aiAnalysis.primaryCause.symptoms.length > 0) {
+      addBlock('KORELASI GEJALA DENGAN DIAGNOSA', {
+        type: 'list',
+        items: aiAnalysis.primaryCause.symptoms.map((symptom: string) => 
+          `✓ ${symptom} - Berkaitan dengan ${aiAnalysis.primaryCause.component}`
+        )
+      }, [168, 85, 247]) // purple-500
+    }
+
+    // ADDITIONAL TECHNICAL INFO
+    addBlock('INFORMASI TEKNIS TAMBAHAN', {
+      type: 'grid',
+      items: [
+        { label: 'Sistem Terdampak', value: aiAnalysis.primaryCause.component },
+        { label: 'Tingkat Urgensi', value: aiAnalysis.primaryCause.repairComplexity },
+        { label: 'Waktu Diagnosa', value: `${currentDate.toLocaleString('id-ID')}` },
+        { label: 'AI Model Version', value: 'GPT-4 Turbo' },
+        { label: 'Database Version', value: '2024.12' },
+        { label: 'Report Format', value: 'Professional v1.3' }
+      ]
+    }, [99, 102, 241]) // indigo-500
 
     // RECOMMENDATIONS BLOCK
     addBlock('REKOMENDASI TEKNISI', {
@@ -388,20 +503,32 @@ export async function POST(request: NextRequest) {
       ]
     }, [16, 185, 129]) // green-600
 
-    // FOOTER pada setiap halaman
+    // FOOTER pada setiap halaman dengan jarak yang cukup
     const totalPages = pdf.getNumberOfPages()
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i)
       
-      // Professional footer
+      // Professional footer dengan jarak yang aman dari konten
       pdf.setFillColor(248, 250, 252)
-      pdf.rect(15, 275, 180, 15, 'F')
+      pdf.rect(15, 270, 180, 20, 'F') // Posisi lebih rendah dan tinggi lebih besar
       
-      pdf.setFontSize(7)
+      // Border atas footer
+      pdf.setDrawColor(226, 232, 240)
+      pdf.setLineWidth(0.5)
+      pdf.line(15, 270, 195, 270)
+      
+      pdf.setFontSize(8)
+      pdf.setFont('helvetica', 'bold')
+      pdf.setTextColor(71, 85, 105)
+      pdf.text('AutoDiag Master AI - Sistem Diagnosa Otomotif Berbasis Artificial Intelligence', 20, 278)
+      
       pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(7)
       pdf.setTextColor(100, 116, 139)
-      pdf.text('AutoDiag Master AI - Sistem Diagnosa Otomotif Berbasis Artificial Intelligence', 20, 283)
-      pdf.text(`${currentDate.toLocaleDateString('id-ID')} | Halaman ${i}/${totalPages} | ${reportNumber}`, 20, 288)
+      pdf.text(`Generated: ${currentDate.toLocaleDateString('id-ID')} ${currentDate.toLocaleTimeString('id-ID')}`, 20, 283)
+      pdf.text(`Report ID: ${reportNumber} | Diagnosis ID: ${diagnosisId}`, 20, 287)
+      pdf.text(`Halaman ${i} dari ${totalPages} | © 2024 AutoDiag Master AI`, 130, 283)
+      pdf.text('Laporan ini dibuat secara otomatis oleh sistem AI', 130, 287)
     }
 
     // Save report to database
