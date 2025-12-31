@@ -21,6 +21,7 @@ import {
 import DiagnosisWizard, { DiagnosisData } from '@/components/diagnosis-wizard'
 import DiagnosisResultEnhanced from '@/components/diagnosis-result-enhanced'
 import DiagnosisHistory from '@/components/diagnosis-history'
+import DiagnosisHistoryEnhanced from '@/components/diagnosis-history-enhanced'
 import DTCLibrary from '@/components/dtc-library'
 
 type View = 'home' | 'new-diagnosis' | 'history' | 'diagnosis-result' | 'dtc-library'
@@ -57,11 +58,14 @@ export default function AutoDiagMasterAI() {
   )
 
   const renderHistoryView = () => (
-    <DiagnosisHistory
+    <DiagnosisHistoryEnhanced
       onNewDiagnosis={() => setCurrentView('new-diagnosis')}
-      onViewDiagnosis={(id) => {
-        console.log('View diagnosis:', id)
-        setCurrentView('home')
+      onViewDiagnosis={(diagnosisId, aiAnalysis) => {
+        setDiagnosisResult({
+          diagnosisId,
+          aiAnalysis
+        })
+        setCurrentView('diagnosis-result')
       }}
     />
   )

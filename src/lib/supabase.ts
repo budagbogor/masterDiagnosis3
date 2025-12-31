@@ -3,19 +3,30 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Check if keys are properly configured
+const isSupabaseConfigured = supabaseUrl && 
+  supabaseAnonKey && 
+  supabaseAnonKey !== 'your-supabase-anon-key-here'
+
+export const supabase = isSupabaseConfigured ? 
+  createClient(supabaseUrl, supabaseAnonKey) : null
 
 // Server-side client dengan service role key
-export const supabaseAdmin = createClient(
-  supabaseUrl,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const isServiceRoleConfigured = serviceRoleKey && 
+  serviceRoleKey !== 'your-supabase-service-role-key-here'
+
+export const supabaseAdmin = isSupabaseConfigured && isServiceRoleConfigured ?
+  createClient(
+    supabaseUrl,
+    serviceRoleKey,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     }
-  }
-)
+  ) : null
 
 // Database types untuk TypeScript
 export type Database = {

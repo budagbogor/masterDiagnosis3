@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 import { aiMasterTechnician, DiagnosisData } from '@/lib/openai'
-
-const prisma = new PrismaClient()
+import { diagnosisService } from '@/lib/diagnosis-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,31 +18,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Simpan diagnosis ke database dengan status ANALYZING
-    const diagnosis = await prisma.diagnosis.create({
-      data: {
-        brand: body.vehicle.brand,
-        model: body.vehicle.model,
-        year: body.vehicle.year,
-        engineCode: body.vehicle.engineCode,
-        transmission: body.vehicle.transmission,
-        mileage: body.vehicle.mileage,
-        vin: body.vehicle.vin,
-        complaint: body.symptoms.complaint,
-        sounds: JSON.stringify(body.symptoms.sounds || []),
-        vibrations: JSON.stringify(body.symptoms.vibrations || []),
-        smells: JSON.stringify(body.symptoms.smells || []),
-        warningLights: JSON.stringify(body.symptoms.warningLights || []),
-        conditions: JSON.stringify(body.symptoms.conditions || []),
-        additionalNotes: body.symptoms.additionalNotes,
-        lastServiceDate: body.serviceHistory?.lastServiceDate,
-        partsReplaced: JSON.stringify(body.serviceHistory?.partsReplaced || []),
-        modifications: JSON.stringify(body.serviceHistory?.modifications || []),
-        errorCodes: JSON.stringify(body.dtcCodes || []),
-        visualInspection: body.testResults?.visualInspection,
-        testDriveNotes: body.testResults?.testDriveNotes,
-        status: 'ANALYZING'
-      }
-    })
+    const diagnosisId = await diagnosisService.saveToPrisma(body)
+    
+    // Simpan juga ke Supabase
+    try {
+      await diagnosisService.saveToSupabase(body, diagnosisId)
+    } catch (supabaseError) {
+      console.warn('Failed to save to Supabase, continuing with local database:', supabaseError)
+    }
 
     // Proses analisa dengan AI
     try {
@@ -59,21 +40,13 @@ export async function POST(request: NextRequest) {
       const aiResult = await aiMasterTechnician.analyzeDiagnosis(diagnosisData)
 
       // Update diagnosis dengan hasil AI
-      const updatedDiagnosis = await prisma.diagnosis.update({
-        where: { id: diagnosis.id },
-        data: {
-          aiAnalysis: JSON.stringify(aiResult),
-          aiConfidence: aiResult.confidence,
-          estimatedCost: JSON.stringify(aiResult.estimatedTotalCost),
-          status: 'COMPLETED'
-        }
-      })
+      await diagnosisService.updateAIAnalysis(diagnosisId, aiResult, aiResult.confidence)
 
       return NextResponse.json({
         success: true,
         data: {
-          id: updatedDiagnosis.id,
-          status: updatedDiagnosis.status,
+          id: diagnosisId,
+          status: 'COMPLETED',
           aiAnalysis: aiResult
         }
       })
@@ -81,19 +54,11 @@ export async function POST(request: NextRequest) {
     } catch (aiError) {
       console.error('AI Analysis Error:', aiError)
       
-      // Update status ke ERROR
-      await prisma.diagnosis.update({
-        where: { id: diagnosis.id },
-        data: {
-          status: 'ERROR'
-        }
-      })
-
       return NextResponse.json(
         { 
           success: false, 
           error: 'Gagal menganalisa dengan AI',
-          diagnosisId: diagnosis.id
+          diagnosisId: diagnosisId
         },
         { status: 500 }
       )
@@ -119,44 +84,21 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    const where: any = {}
-    
-    if (userId) {
-      where.userId = userId
-    }
-    
-    if (status) {
-      where.status = status
-    }
-
-    const diagnoses = await prisma.diagnosis.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take: limit,
-      skip: offset,
-      select: {
-        id: true,
-        brand: true,
-        model: true,
-        year: true,
-        complaint: true,
-        status: true,
-        aiConfidence: true,
-        createdAt: true,
-        updatedAt: true
-      }
+    const result = await diagnosisService.getDiagnosesList({
+      userId: userId || undefined,
+      status: status || undefined,
+      limit,
+      offset
     })
-
-    const total = await prisma.diagnosis.count({ where })
 
     return NextResponse.json({
       success: true,
-      data: diagnoses,
+      data: result.diagnoses,
       pagination: {
-        total,
+        total: result.total,
         limit,
         offset,
-        hasMore: offset + limit < total
+        hasMore: offset + limit < result.total
       }
     })
 
