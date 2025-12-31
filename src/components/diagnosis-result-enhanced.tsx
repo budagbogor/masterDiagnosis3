@@ -175,43 +175,43 @@ export default function DiagnosisResultEnhanced({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Professional Tab Navigation - Enhanced */}
+        {/* Professional Tab Navigation - No Scroll */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-14 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-1.5 gap-1">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-14 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-1.5 gap-1 overflow-visible">
             <TabsTrigger 
               value="overview" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
             >
-              <Target className="w-4 h-4 mr-1 lg:mr-2" />
-              OVERVIEW
+              <Target className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
+              <span className="truncate">OVERVIEW</span>
             </TabsTrigger>
             <TabsTrigger 
               value="diagnosis" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
             >
-              <Zap className="w-4 h-4 mr-1 lg:mr-2" />
-              DIAGNOSIS
+              <Zap className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
+              <span className="truncate">DIAGNOSIS</span>
             </TabsTrigger>
             <TabsTrigger 
               value="theory" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
             >
-              <Settings className="w-4 h-4 mr-1 lg:mr-2" />
-              THEORY
+              <Settings className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
+              <span className="truncate">THEORY</span>
             </TabsTrigger>
             <TabsTrigger 
               value="procedures" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
             >
-              <Wrench className="w-4 h-4 mr-1 lg:mr-2" />
-              REPAIR
+              <Wrench className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
+              <span className="truncate">REPAIR</span>
             </TabsTrigger>
             <TabsTrigger 
               value="cost" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
             >
-              <DollarSign className="w-4 h-4 mr-1 lg:mr-2" />
-              COST
+              <DollarSign className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
+              <span className="truncate">COST</span>
             </TabsTrigger>
           </TabsList>
         </div>
