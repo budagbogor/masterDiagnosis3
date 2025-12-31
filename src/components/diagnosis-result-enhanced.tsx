@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -25,7 +25,9 @@ import {
   TrendingUp,
   Shield,
   Gauge,
-  Activity
+  Activity,
+  ChevronDown,
+  Menu
 } from 'lucide-react'
 
 interface DiagnosisResultProps {
@@ -41,6 +43,32 @@ export default function DiagnosisResultEnhanced({
 }: DiagnosisResultProps) {
   const [activeTab, setActiveTab] = useState('overview')
   const [isGeneratingReport, setIsGeneratingReport] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const tabs = [
+    { id: 'overview', label: 'OVERVIEW', icon: Target },
+    { id: 'diagnosis', label: 'DIAGNOSIS', icon: Zap },
+    { id: 'theory', label: 'THEORY', icon: Settings },
+    { id: 'procedures', label: 'REPAIR', icon: Wrench },
+    { id: 'cost', label: 'COST', icon: DollarSign }
+  ]
+
+  const activeTabData = tabs.find(tab => tab.id === activeTab)!
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleGenerateReport = async () => {
     setIsGeneratingReport(true)
@@ -175,45 +203,74 @@ export default function DiagnosisResultEnhanced({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Professional Tab Navigation - No Scroll */}
+        {/* Professional Tab Navigation - Modern Design */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-14 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-1.5 gap-1 overflow-visible">
-            <TabsTrigger 
-              value="overview" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
+          {/* Desktop Tab Navigation */}
+          <div className="hidden sm:block">
+            <TabsList className="grid w-full grid-cols-5 h-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-1 gap-1">
+              {tabs.map((tab) => {
+                const IconComponent = tab.icon
+                return (
+                  <TabsTrigger 
+                    key={tab.id}
+                    value={tab.id}
+                    className="font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex items-center justify-center gap-2"
+                  >
+                    <IconComponent className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">{tab.label}</span>
+                  </TabsTrigger>
+                )
+              })}
+            </TabsList>
+          </div>
+
+          {/* Mobile Dropdown Navigation */}
+          <div className="sm:hidden relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="w-full bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg p-3 flex items-center justify-between font-bold text-sm"
             >
-              <Target className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
-              <span className="truncate">OVERVIEW</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="diagnosis" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
-            >
-              <Zap className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
-              <span className="truncate">DIAGNOSIS</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="theory" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
-            >
-              <Settings className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
-              <span className="truncate">THEORY</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="procedures" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
-            >
-              <Wrench className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
-              <span className="truncate">REPAIR</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="cost" 
-              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex-1 min-w-0 px-1 lg:px-3"
-            >
-              <DollarSign className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 flex-shrink-0" />
-              <span className="truncate">COST</span>
-            </TabsTrigger>
-          </TabsList>
+              <div className="flex items-center gap-2">
+                <activeTabData.icon className="w-4 h-4" />
+                <span>{activeTabData.label}</span>
+              </div>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {isMobileMenuOpen && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden backdrop-blur-sm animate-in slide-in-from-top-2 duration-200">
+                <div className="py-2">
+                  {tabs.map((tab, index) => {
+                    const IconComponent = tab.icon
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => {
+                          setActiveTab(tab.id)
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className={`w-full px-4 py-3 flex items-center gap-3 text-left font-semibold text-sm transition-all duration-200 ${
+                          activeTab === tab.id 
+                            ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-l-4 border-blue-600' 
+                            : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                        } ${index !== tabs.length - 1 ? 'border-b border-slate-100' : ''}`}
+                      >
+                        <div className={`p-1.5 rounded-lg transition-colors duration-200 ${
+                          activeTab === tab.id ? 'bg-blue-200' : 'bg-slate-100'
+                        }`}>
+                          <IconComponent className="w-4 h-4 flex-shrink-0" />
+                        </div>
+                        <span className="flex-1">{tab.label}</span>
+                        {activeTab === tab.id && (
+                          <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Overview Tab - Technical Dashboard Style */}
