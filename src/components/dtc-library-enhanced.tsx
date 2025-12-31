@@ -366,7 +366,7 @@ export default function DTCLibraryEnhanced() {
                   </TabsList>
 
                   <div className="min-h-[400px]">
-                    <TabsContent value="overview" className="space-y-4 mt-0">
+                    <TabsContent value="overview" className="space-y-4">
                       <div>
                         <div className="flex items-center gap-2 mb-2">
                           <span className="font-mono font-bold text-xl text-blue-600">
@@ -422,7 +422,7 @@ export default function DTCLibraryEnhanced() {
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="diagnosis" className="space-y-4 mt-0">
+                    <TabsContent value="diagnosis" className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2 flex items-center gap-2">
                           <Search className="w-4 h-4 text-blue-500" />
@@ -441,7 +441,7 @@ export default function DTCLibraryEnhanced() {
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="repair" className="space-y-4 mt-0">
+                    <TabsContent value="repair" className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2 flex items-center gap-2">
                           <Wrench className="w-4 h-4 text-green-500" />
@@ -460,7 +460,7 @@ export default function DTCLibraryEnhanced() {
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="components" className="space-y-4 mt-0">
+                    <TabsContent value="components" className="space-y-4">
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
                           <h4 className="font-semibold mb-2 flex items-center gap-2">
