@@ -2,6 +2,25 @@
 
 All notable changes to AutoDiag Master AI will be documented in this file.
 
+## [1.3.0] - 2026-01-01
+
+### Added
+- **Modern Dropdown Tab Navigation**: Professional dropdown menu untuk mobile devices
+- **Space-Efficient Mobile Design**: Layout yang hemat space dengan dropdown navigation
+- **Smooth Animations**: Animasi smooth untuk dropdown menu dengan slide-in effects
+- **Click-Outside-to-Close**: Functionality untuk menutup dropdown ketika klik di luar area
+- **Enhanced Visual Hierarchy**: Icons dan gradients untuk better user experience
+
+### Changed
+- **Mobile Tab Layout**: Ganti vertical tab layout dengan dropdown menu di mobile
+- **Responsive Design**: Maintain horizontal tabs untuk desktop, dropdown untuk mobile
+- **Touch Interactions**: Improved mobile touch interactions dan usability
+
+### Technical
+- **React Hooks**: Added useRef dan useEffect untuk dropdown management
+- **Responsive Patterns**: Enhanced responsive design patterns untuk navigation
+- **Animation System**: Implemented smooth transition animations
+
 ## [1.2.0] - 2024-12-31
 
 ### Added
