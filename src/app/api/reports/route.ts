@@ -143,16 +143,36 @@ export async function POST(request: NextRequest) {
       return false
     }
 
-    // Helper function to add professional block with better spacing
+    // Helper function to add professional block with consistent spacing
     const addBlock = (title: string, content: any, color: [number, number, number] = [59, 130, 246]) => {
-      const estimatedHeight = typeof content === 'string' ? 
-        Math.max(pdf.splitTextToSize(content, 170).length * 4 + 20, 30) :
-        content.type === 'grid' ? Math.ceil(content.items.length / 2) * 12 + 25 :
-        content.type === 'list' ? content.items.length * 4 + 25 : 30
+      const lineHeight = 5 // Consistent line height
+      const padding = 8 // Consistent padding
       
-      checkPageBreak(estimatedHeight)
+      // Calculate content height more accurately
+      let contentHeight = 0
+      let contentLines: string[] = []
       
-      // Block header with gradient effect
+      if (typeof content === 'string') {
+        contentLines = pdf.splitTextToSize(content, 170)
+        contentHeight = contentLines.length * lineHeight + (padding * 2)
+      } else if (content.type === 'grid') {
+        const rows = Math.ceil(content.items.length / 2)
+        contentHeight = rows * (lineHeight + 2) + (padding * 2)
+      } else if (content.type === 'list') {
+        // Calculate height for list items with proper line wrapping
+        let totalLines = 0
+        content.items.forEach((item: string) => {
+          const itemLines = pdf.splitTextToSize(`• ${item}`, 170)
+          totalLines += itemLines.length
+        })
+        contentHeight = totalLines * lineHeight + (padding * 2)
+      }
+      
+      const totalBlockHeight = 12 + contentHeight + 5 // Header + content + spacing
+      
+      checkPageBreak(totalBlockHeight)
+      
+      // Block header
       pdf.setFillColor(color[0], color[1], color[2])
       pdf.roundedRect(15, yPos, 180, 12, 2, 2, 'F')
       
@@ -164,75 +184,84 @@ export async function POST(request: NextRequest) {
       
       yPos += 15
       
-      // Content area with dynamic height
-      const contentHeight = typeof content === 'string' ? 
-        Math.max(pdf.splitTextToSize(content, 170).length * 4 + 12, 25) :
-        content.type === 'grid' ? Math.ceil(content.items.length / 2) * 12 + 12 :
-        content.type === 'list' ? content.items.length * 4 + 12 : 25
-      
+      // Content area
       pdf.setFillColor(248, 250, 252)
       pdf.roundedRect(15, yPos, 180, contentHeight, 2, 2, 'F')
       
-      // Content
+      // Content with consistent spacing
       pdf.setTextColor(51, 65, 85)
       pdf.setFont('helvetica', 'normal')
       pdf.setFontSize(9)
       
+      let currentY = yPos + padding
+      
       if (typeof content === 'string') {
-        const lines = pdf.splitTextToSize(content, 170)
-        pdf.text(lines, 20, yPos + 6)
-        yPos += lines.length * 4 + 12
+        contentLines.forEach((line: string, index: number) => {
+          pdf.text(line, 20, currentY + (index * lineHeight))
+        })
       } else if (content.type === 'grid') {
         content.items.forEach((item: any, index: number) => {
-          const xOffset = (index % 2) * 90
-          const yOffset = Math.floor(index / 2) * 12
+          const col = index % 2
+          const row = Math.floor(index / 2)
+          const xOffset = col * 90
+          const yOffset = row * (lineHeight + 2)
+          
           pdf.setFont('helvetica', 'bold')
-          pdf.text(item.label + ':', 20 + xOffset, yPos + 6 + yOffset)
+          pdf.text(item.label + ':', 20 + xOffset, currentY + yOffset)
           pdf.setFont('helvetica', 'normal')
-          const valueText = pdf.splitTextToSize(item.value, 50)
-          pdf.text(valueText, 20 + xOffset + 35, yPos + 6 + yOffset)
+          
+          // Handle long values with text wrapping
+          const valueLines = pdf.splitTextToSize(item.value, 50)
+          valueLines.forEach((valueLine: string, lineIndex: number) => {
+            pdf.text(valueLine, 20 + xOffset + 35, currentY + yOffset + (lineIndex * lineHeight))
+          })
         })
-        yPos += Math.ceil(content.items.length / 2) * 12 + 12
       } else if (content.type === 'list') {
-        content.items.forEach((item: string, index: number) => {
+        let currentLineIndex = 0
+        content.items.forEach((item: string) => {
           const itemLines = pdf.splitTextToSize(`• ${item}`, 170)
-          pdf.text(itemLines, 20, yPos + 6 + (index * 4))
+          itemLines.forEach((line: string, lineIndex: number) => {
+            pdf.text(line, 20, currentY + (currentLineIndex * lineHeight))
+            currentLineIndex++
+          })
         })
-        yPos += content.items.length * 4 + 12
       }
       
-      yPos += 8 // Extra spacing between blocks
+      yPos += contentHeight + 8 // Move to next position with consistent spacing
       pdf.setTextColor(0, 0, 0)
     }
 
-    // Helper function for metrics blocks (3-column layout)
+    // Helper function for metrics blocks (3-column layout) with consistent spacing
     const addMetricsRow = (metrics: any[]) => {
-      checkPageBreak(35)
+      checkPageBreak(40)
       
       metrics.forEach((metric, index) => {
         const xPos = 15 + (index * 60)
         
         // Metric block
         pdf.setFillColor(metric.color[0], metric.color[1], metric.color[2])
-        pdf.roundedRect(xPos, yPos, 55, 25, 2, 2, 'F')
+        pdf.roundedRect(xPos, yPos, 55, 30, 2, 2, 'F')
         
         // Icon area (simulated)
         pdf.setFillColor(255, 255, 255, 0.2)
-        pdf.circle(xPos + 12, yPos + 8, 4, 'F')
+        pdf.circle(xPos + 12, yPos + 10, 4, 'F')
         
-        // Value
+        // Value with proper positioning
         pdf.setTextColor(255, 255, 255)
         pdf.setFontSize(12)
         pdf.setFont('helvetica', 'bold')
-        pdf.text(metric.value, xPos + 20, yPos + 10)
+        pdf.text(metric.value, xPos + 20, yPos + 12)
         
-        // Label
-        pdf.setFontSize(7)
+        // Label with proper spacing
+        pdf.setFontSize(8)
         pdf.setFont('helvetica', 'normal')
-        pdf.text(metric.label, xPos + 5, yPos + 20)
+        const labelLines = pdf.splitTextToSize(metric.label, 50)
+        labelLines.forEach((line: string, lineIndex: number) => {
+          pdf.text(line, xPos + 5, yPos + 22 + (lineIndex * 4))
+        })
       })
       
-      yPos += 35
+      yPos += 40 // Consistent spacing after metrics
       pdf.setTextColor(0, 0, 0)
     }
 
@@ -364,12 +393,17 @@ export async function POST(request: NextRequest) {
       }, [239, 68, 68]) // red-500
     }
 
-    // DIAGNOSTIC STEPS - DETAILED VERSION
+    // DIAGNOSTIC STEPS - DETAILED VERSION with proper spacing
+    const diagnosticStepsFormatted = aiAnalysis.diagnosticSteps.map((step: any) => {
+      return `STEP ${step.step}: ${step.title}\n` +
+             `Deskripsi: ${step.description}\n` +
+             `Expected Result: ${step.expectedResult}\n` +
+             `Tools: ${step.tools.join(', ')}\n`
+    })
+    
     addBlock('LANGKAH DIAGNOSA DETAIL', {
       type: 'list',
-      items: aiAnalysis.diagnosticSteps.map((step: any) => 
-        `STEP ${step.step}: ${step.title}\n   Deskripsi: ${step.description}\n   Expected Result: ${step.expectedResult}\n   Tools: ${step.tools.join(', ')}`
-      )
+      items: diagnosticStepsFormatted
     }, [16, 185, 129]) // green-600
 
     // THEORY EXPLANATION - DETAILED
@@ -380,13 +414,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // REPAIR PROCEDURES - DETAILED VERSION
+    // REPAIR PROCEDURES - DETAILED VERSION with proper formatting
     if (aiAnalysis.repairProcedures && aiAnalysis.repairProcedures.length > 0) {
       aiAnalysis.repairProcedures.forEach((procedure: any, index: number) => {
+        const procedureDescription = `Deskripsi: ${procedure.description}\n\n` +
+                                   `Tingkat Kesulitan: ${procedure.difficultyLevel}\n` +
+                                   `Estimasi Waktu: ${procedure.estimatedTime} menit\n\n` +
+                                   `Langkah-langkah Detail:`
+        
         addBlock(`PROSEDUR PERBAIKAN ${index + 1}: ${procedure.title}`, 
-          `Deskripsi: ${procedure.description}\n\nTingkat Kesulitan: ${procedure.difficultyLevel}\nEstimasi Waktu: ${procedure.estimatedTime} menit\n\nLangkah-langkah Detail:\n${procedure.steps.map((step: string, i: number) => `${i+1}. ${step}`).join('\n')}`,
+          procedureDescription,
           [147, 51, 234] // purple-600
         )
+
+        // Steps as separate block for better formatting
+        addBlock(`LANGKAH KERJA - ${procedure.title}`, {
+          type: 'list',
+          items: procedure.steps.map((step: string, i: number) => `${i+1}. ${step}`)
+        }, [99, 102, 241]) // indigo-500
 
         // Safety Precautions
         if (procedure.safetyPrecautions && procedure.safetyPrecautions.length > 0) {
@@ -410,7 +455,7 @@ export async function POST(request: NextRequest) {
             type: 'grid',
             items: procedure.requiredParts.map((part: any) => ({
               label: part.name,
-              value: `${part.partNumber || 'N/A'} - Rp ${part.estimatedPrice.toLocaleString('id-ID')}`
+              value: `${part.partNumber || 'N/A'}\nRp ${part.estimatedPrice.toLocaleString('id-ID')}`
             }))
           }, [245, 158, 11]) // amber-500
         }
@@ -445,13 +490,18 @@ export async function POST(request: NextRequest) {
     ]
     addMetricsRow(costMetrics)
 
-    // SECONDARY CAUSES - DETAILED VERSION
+    // SECONDARY CAUSES - DETAILED VERSION with better formatting
     if (aiAnalysis.secondaryCauses && aiAnalysis.secondaryCauses.length > 0) {
+      const secondaryCausesFormatted = aiAnalysis.secondaryCauses.map((cause: any) => {
+        return `${cause.component} (Probabilitas: ${Math.round(cause.probability * 100)}%)\n` +
+               `Deskripsi: ${cause.description}\n` +
+               `Kompleksitas: ${cause.repairComplexity}\n` +
+               `Estimasi Biaya: Rp ${cause.estimatedCost.min.toLocaleString('id-ID')} - Rp ${cause.estimatedCost.max.toLocaleString('id-ID')}\n`
+      })
+      
       addBlock('KEMUNGKINAN PENYEBAB ALTERNATIF', {
         type: 'list',
-        items: aiAnalysis.secondaryCauses.map((cause: any) => 
-          `${cause.component} (Probabilitas: ${Math.round(cause.probability * 100)}%)\nDeskripsi: ${cause.description}\nKompleksitas: ${cause.repairComplexity}\nEstimasi Biaya: Rp ${cause.estimatedCost.min.toLocaleString('id-ID')} - Rp ${cause.estimatedCost.max.toLocaleString('id-ID')}`
-        )
+        items: secondaryCausesFormatted
       }, [251, 146, 60]) // orange-500
     }
 
@@ -468,13 +518,15 @@ export async function POST(request: NextRequest) {
       ]
     }, [34, 197, 94]) // green-500
 
-    // SYMPTOMS CORRELATION DETAIL
+    // SYMPTOMS CORRELATION DETAIL with proper formatting
     if (aiAnalysis.primaryCause.symptoms && aiAnalysis.primaryCause.symptoms.length > 0) {
+      const symptomsFormatted = aiAnalysis.primaryCause.symptoms.map((symptom: string) => 
+        `✓ ${symptom}\n  Berkaitan dengan: ${aiAnalysis.primaryCause.component}`
+      )
+      
       addBlock('KORELASI GEJALA DENGAN DIAGNOSA', {
         type: 'list',
-        items: aiAnalysis.primaryCause.symptoms.map((symptom: string) => 
-          `✓ ${symptom} - Berkaitan dengan ${aiAnalysis.primaryCause.component}`
-        )
+        items: symptomsFormatted
       }, [168, 85, 247]) // purple-500
     }
 
