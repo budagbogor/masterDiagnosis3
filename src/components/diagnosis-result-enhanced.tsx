@@ -3,11 +3,9 @@
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import {
   CheckCircle2,
@@ -16,7 +14,6 @@ import {
   Wrench,
   DollarSign,
   FileText,
-  Download,
   ArrowLeft,
   Info,
   AlertCircle,
@@ -178,26 +175,41 @@ export default function DiagnosisResultEnhanced({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Professional Tab Navigation */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-2">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-12 bg-slate-100 rounded-lg p-1">
-            <TabsTrigger value="overview" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+        {/* Professional Tab Navigation - Enhanced */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-14 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-1.5 gap-1">
+            <TabsTrigger 
+              value="overview" 
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+            >
               <Target className="w-4 h-4 mr-1 lg:mr-2" />
               OVERVIEW
             </TabsTrigger>
-            <TabsTrigger value="diagnosis" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger 
+              value="diagnosis" 
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+            >
               <Zap className="w-4 h-4 mr-1 lg:mr-2" />
               DIAGNOSIS
             </TabsTrigger>
-            <TabsTrigger value="theory" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger 
+              value="theory" 
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+            >
               <Settings className="w-4 h-4 mr-1 lg:mr-2" />
               THEORY
             </TabsTrigger>
-            <TabsTrigger value="procedures" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger 
+              value="procedures" 
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+            >
               <Wrench className="w-4 h-4 mr-1 lg:mr-2" />
               REPAIR
             </TabsTrigger>
-            <TabsTrigger value="cost" className="font-semibold text-xs lg:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger 
+              value="cost" 
+              className="font-bold text-xs lg:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md"
+            >
               <DollarSign className="w-4 h-4 mr-1 lg:mr-2" />
               COST
             </TabsTrigger>
