@@ -2,6 +2,43 @@
 
 All notable changes to AutoDiag Master AI will be documented in this file.
 
+## [1.4.0] - 2026-01-01
+
+### 🎉 Major Features Added
+- **Comprehensive OBD-II DTC Database**: Added complete database with 2,061 diagnostic trouble codes
+- **Advanced DTC Search & Filter**: Real-time search and filtering by system, severity, and keywords
+- **Enhanced OBDII.DTC Page**: Complete redesign with interactive tabs and statistics
+- **Batch Data Processing**: Efficient upload and management of large DTC datasets
+
+### 🔧 Technical Improvements
+- **Database Schema Enhancement**: Added comprehensive columns for DTC data (symptoms, causes, procedures, sensors, actuators)
+- **Supabase Integration**: Full migration to cloud database with MCP tools
+- **Service Layer Updates**: Enhanced DTC library service with fallback support
+- **API Optimization**: Improved performance for large dataset operations
+
+### 📊 Database Statistics
+- **Total DTC Codes**: 2,061 codes
+- **P0 Generic Powertrain**: 1,758 codes
+- **P1 Manufacturer Specific**: 2 codes
+- **U0 Network Communication**: 299 codes
+- **Severity Distribution**: 33 Critical, 481 High, 1,547 Medium
+
+### 🌏 Localization
+- **Indonesian Language Support**: All DTC descriptions translated to Indonesian
+- **Vehicle Compatibility**: Specific information for Indonesian market vehicles
+- **Local Context**: Adapted diagnostic procedures for Indonesian conditions
+
+### 🛠️ Developer Tools
+- **Data Conversion Scripts**: Automated tools for processing OBD-II data sources
+- **Database Seeding**: Batch processing scripts for efficient data upload
+- **Migration Tools**: Supabase schema migration and data transformation utilities
+
+### 🔍 Enhanced Features
+- **Real-time Statistics**: Live dashboard showing DTC distribution and counts
+- **Advanced Search**: Multi-criteria search across codes, descriptions, and symptoms
+- **Professional UI**: Modern interface with improved user experience
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+
 ## [1.3.0] - 2026-01-01
 
 ### Added
