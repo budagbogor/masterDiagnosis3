@@ -617,16 +617,16 @@ export default function DiagnosisResultEnhanced({
               <div className="space-y-4">
                 <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-blue-900 text-base">PARTS COST</span>
-                    <span className="font-bold text-xl text-blue-700 ml-4">
+                    <span className="font-bold text-blue-900 text-sm">PARTS COST</span>
+                    <span className="font-bold text-lg text-blue-700 ml-4">
                       {formatCurrency(aiAnalysis.estimatedTotalCost.parts)}
                     </span>
                   </div>
                 </div>
                 <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-green-900 text-base">LABOR COST</span>
-                    <span className="font-bold text-xl text-green-700 ml-4">
+                    <span className="font-bold text-green-900 text-sm">LABOR COST</span>
+                    <span className="font-bold text-lg text-green-700 ml-4">
                       {formatCurrency(aiAnalysis.estimatedTotalCost.labor)}
                     </span>
                   </div>
@@ -634,8 +634,8 @@ export default function DiagnosisResultEnhanced({
                 <Separator className="my-4" />
                 <div className="bg-slate-100 p-4 rounded-lg border-l-4 border-slate-500">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-lg">TOTAL ESTIMATE</span>
-                    <span className="font-bold text-2xl text-slate-900 ml-4">
+                    <span className="font-bold text-slate-900 text-base">TOTAL ESTIMATE</span>
+                    <span className="font-bold text-xl text-slate-900 ml-4">
                       {formatCurrency(aiAnalysis.estimatedTotalCost.total)}
                     </span>
                   </div>
