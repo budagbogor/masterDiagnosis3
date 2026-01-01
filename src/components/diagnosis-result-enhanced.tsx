@@ -207,17 +207,17 @@ export default function DiagnosisResultEnhanced({
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
           {/* Desktop & Tablet Tab Navigation (md and up) */}
           <div className="hidden md:block">
-            <TabsList className="grid w-full grid-cols-5 h-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-1 gap-1">
+            <TabsList className="grid w-full grid-cols-5 h-12 md:h-14 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-1 gap-0.5 md:gap-1">
               {tabs.map((tab) => {
                 const IconComponent = tab.icon
                 return (
                   <TabsTrigger 
                     key={tab.id}
                     value={tab.id}
-                    className="font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex items-center justify-center gap-2 px-2"
+                    className="font-bold text-[10px] md:text-xs lg:text-sm xl:text-base text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex flex-col md:flex-row items-center justify-center gap-0.5 md:gap-1 lg:gap-2 px-0.5 md:px-1 lg:px-2 min-w-0 py-1"
                   >
-                    <IconComponent className="w-4 h-4 flex-shrink-0" />
-                    <span className="truncate">{tab.label}</span>
+                    <IconComponent className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />
+                    <span className="text-[9px] md:text-[10px] lg:text-xs xl:text-sm leading-tight whitespace-nowrap overflow-hidden text-ellipsis max-w-full">{tab.label}</span>
                   </TabsTrigger>
                 )
               })}
