@@ -203,10 +203,10 @@ export default function DiagnosisResultEnhanced({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Professional Tab Navigation - Modern Design */}
+        {/* Professional Tab Navigation - Responsive Design */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
-          {/* Desktop Tab Navigation */}
-          <div className="hidden sm:block">
+          {/* Desktop & Tablet Tab Navigation (md and up) */}
+          <div className="hidden md:block">
             <TabsList className="grid w-full grid-cols-5 h-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-1 gap-1">
               {tabs.map((tab) => {
                 const IconComponent = tab.icon
@@ -214,7 +214,7 @@ export default function DiagnosisResultEnhanced({
                   <TabsTrigger 
                     key={tab.id}
                     value={tab.id}
-                    className="font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex items-center justify-center gap-2"
+                    className="font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex items-center justify-center gap-2 px-2"
                   >
                     <IconComponent className="w-4 h-4 flex-shrink-0" />
                     <span className="truncate">{tab.label}</span>
@@ -224,8 +224,8 @@ export default function DiagnosisResultEnhanced({
             </TabsList>
           </div>
 
-          {/* Mobile Dropdown Navigation */}
-          <div className="sm:hidden relative" ref={dropdownRef}>
+          {/* Mobile Dropdown Navigation (below md) */}
+          <div className="md:hidden relative" ref={dropdownRef}>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="w-full bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg p-3 flex items-center justify-between font-bold text-sm"
