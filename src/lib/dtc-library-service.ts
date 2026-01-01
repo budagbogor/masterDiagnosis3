@@ -1,5 +1,6 @@
 import { supabaseAdmin } from './supabase'
-import { ALL_DTC_DATA, DTCDataItem } from './dtc-data'
+import { ALL_DTC_DATA } from './dtc-data'
+import { COMPREHENSIVE_DTC_DATA } from './comprehensive-dtc-data'
 
 export interface DTCCode {
   id: string
@@ -99,22 +100,39 @@ export class DTCLibraryService {
     }
   ]
 
-  // Menggunakan data DTC lengkap dari dtc-data.ts
-  static readonly DTC_CODES: Omit<DTCCode, 'id' | 'createdAt' | 'updatedAt'>[] = ALL_DTC_DATA.map(dtc => ({
-    code: dtc.code,
-    system: dtc.system,
-    subsystem: dtc.subsystem,
-    description: dtc.description,
-    descriptionIndonesian: dtc.descriptionIndonesian,
-    severity: dtc.severity,
-    symptoms: dtc.symptoms,
-    possibleCauses: dtc.possibleCauses,
-    diagnosticSteps: dtc.diagnosticSteps,
-    repairProcedures: dtc.repairProcedures,
-    relatedSensors: dtc.relatedSensors,
-    relatedActuators: dtc.relatedActuators,
-    applicableVehicles: dtc.applicableVehicles
-  }))
+  // Menggunakan data DTC lengkap dari comprehensive-dtc-data.ts (2000+ kode)
+  static readonly DTC_CODES: Omit<DTCCode, 'id' | 'createdAt' | 'updatedAt'>[] = [
+    ...ALL_DTC_DATA.map(dtc => ({
+      code: dtc.code,
+      system: dtc.system,
+      subsystem: dtc.subsystem,
+      description: dtc.description,
+      descriptionIndonesian: dtc.descriptionIndonesian,
+      severity: dtc.severity,
+      symptoms: dtc.symptoms,
+      possibleCauses: dtc.possibleCauses,
+      diagnosticSteps: dtc.diagnosticSteps,
+      repairProcedures: dtc.repairProcedures,
+      relatedSensors: dtc.relatedSensors,
+      relatedActuators: dtc.relatedActuators,
+      applicableVehicles: dtc.applicableVehicles
+    })),
+    ...COMPREHENSIVE_DTC_DATA.map(dtc => ({
+      code: dtc.code,
+      system: dtc.system,
+      subsystem: dtc.subsystem,
+      description: dtc.description,
+      descriptionIndonesian: dtc.descriptionIndonesian,
+      severity: dtc.severity,
+      symptoms: dtc.symptoms,
+      possibleCauses: dtc.possibleCauses,
+      diagnosticSteps: dtc.diagnosticSteps,
+      repairProcedures: dtc.repairProcedures,
+      relatedSensors: dtc.relatedSensors,
+      relatedActuators: dtc.relatedActuators,
+      applicableVehicles: dtc.applicableVehicles
+    }))
+  ]
 
   // Simpan semua DTC codes ke Supabase
   async seedDTCCodes(): Promise<void> {
@@ -126,33 +144,44 @@ export class DTCLibraryService {
 
       console.log('🔧 Memulai seed DTC codes ke Supabase...')
 
-      // Transform data untuk Supabase
+      // Transform data untuk Supabase dengan pengecekan kolom yang ada
       const dtcCodesForSupabase = DTCLibraryService.DTC_CODES.map(dtc => ({
         code: dtc.code,
         system: dtc.system,
-        subsystem: dtc.subsystem,
+        subsystem: dtc.subsystem || null,
         description: dtc.descriptionIndonesian,
         severity: dtc.severity,
-        possible_causes: dtc.possibleCauses,
-        symptoms: dtc.symptoms,
-        diagnostic_steps: dtc.diagnosticSteps,
-        repair_procedures: dtc.repairProcedures,
-        related_sensors: dtc.relatedSensors,
-        related_actuators: dtc.relatedActuators,
-        applicable_vehicles: dtc.applicableVehicles
+        possible_causes: dtc.possibleCauses || [],
+        symptoms: dtc.symptoms || [],
+        diagnostic_steps: dtc.diagnosticSteps || [],
+        repair_procedures: dtc.repairProcedures || [],
+        related_sensors: dtc.relatedSensors || [],
+        related_actuators: dtc.relatedActuators || [],
+        applicable_vehicles: dtc.applicableVehicles || []
       }))
 
-      // Insert ke Supabase
-      const { error } = await supabaseAdmin
-        .from('dtc_codes')
-        .upsert(dtcCodesForSupabase, { onConflict: 'code' })
+      // Insert ke Supabase dengan batch untuk menghindari timeout
+      const batchSize = 50
+      let insertedCount = 0
 
-      if (error) {
-        console.error('❌ Error seeding DTC codes:', error)
-        throw error
+      for (let i = 0; i < dtcCodesForSupabase.length; i += batchSize) {
+        const batch = dtcCodesForSupabase.slice(i, i + batchSize)
+        
+        const { error } = await supabaseAdmin
+          .from('dtc_codes')
+          .upsert(batch, { onConflict: 'code' })
+
+        if (error) {
+          console.error(`❌ Error inserting batch ${Math.floor(i/batchSize) + 1}:`, error)
+          // Continue dengan batch berikutnya jika ada error
+          continue
+        }
+
+        insertedCount += batch.length
+        console.log(`✅ Inserted batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(dtcCodesForSupabase.length/batchSize)}`)
       }
 
-      console.log(`✅ Berhasil seed ${DTCLibraryService.DTC_CODES.length} DTC codes ke Supabase`)
+      console.log(`✅ Berhasil seed ${insertedCount} DTC codes ke Supabase`)
     } catch (error) {
       console.error('❌ Error dalam seed DTC codes:', error)
       throw error
