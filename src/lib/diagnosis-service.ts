@@ -83,62 +83,36 @@ export class DiagnosisService {
         return diagnosisId || crypto.randomUUID()
       }
       
-      // Cek apakah vehicle sudah ada di Supabase, jika tidak buat baru
-      let vehicleId = null
-      
-      const { data: existingVehicle } = await supabaseAdmin
-        .from('vehicles')
-        .select('id')
-        .eq('brand', diagnosisData.vehicle.brand)
-        .eq('model', diagnosisData.vehicle.model)
-        .eq('year', parseInt(diagnosisData.vehicle.year))
-        .single()
-      
-      if (existingVehicle) {
-        vehicleId = existingVehicle.id
-      } else {
-        // Buat vehicle baru
-        const { data: newVehicle, error: vehicleError } = await supabaseAdmin
-          .from('vehicles')
-          .insert({
-            brand: diagnosisData.vehicle.brand,
-            model: diagnosisData.vehicle.model,
-            year: parseInt(diagnosisData.vehicle.year),
-            engine_code: diagnosisData.vehicle.engineCode,
-            fuel_type: 'Bensin', // Default
-            transmission: diagnosisData.vehicle.transmission
-          })
-          .select('id')
-          .single()
-        
-        if (vehicleError) {
-          console.error('Error creating vehicle:', vehicleError)
-          // Jika gagal buat vehicle, lanjut tanpa vehicle_id
-        } else {
-          vehicleId = newVehicle.id
-        }
-      }
-      
-      // Simpan diagnosis session
-      const diagnosisSession = {
+      // Simpan langsung ke tabel diagnosis
+      const diagnosisRecord = {
         id: diagnosisId || crypto.randomUUID(),
-        vehicle_id: vehicleId,
-        symptoms: [
-          ...diagnosisData.symptoms.sounds || [],
-          ...diagnosisData.symptoms.vibrations || [],
-          ...diagnosisData.symptoms.smells || [],
-          ...diagnosisData.symptoms.warningLights || [],
-          ...diagnosisData.symptoms.conditions || [],
-          diagnosisData.symptoms.complaint
-        ].filter(Boolean),
-        dtc_codes: diagnosisData.dtcCodes || [],
+        brand: diagnosisData.vehicle.brand,
+        model: diagnosisData.vehicle.model,
+        year: diagnosisData.vehicle.year,
+        engine_code: diagnosisData.vehicle.engineCode,
+        transmission: diagnosisData.vehicle.transmission,
+        mileage: diagnosisData.vehicle.mileage,
+        vin: diagnosisData.vehicle.vin,
+        complaint: diagnosisData.symptoms.complaint,
+        sounds: diagnosisData.symptoms.sounds || [],
+        vibrations: diagnosisData.symptoms.vibrations || [],
+        smells: diagnosisData.symptoms.smells || [],
+        warning_lights: diagnosisData.symptoms.warningLights || [],
+        conditions: diagnosisData.symptoms.conditions || [],
+        additional_notes: diagnosisData.symptoms.additionalNotes,
+        error_codes: diagnosisData.dtcCodes || [],
+        last_service_date: diagnosisData.serviceHistory?.lastServiceDate,
+        parts_replaced: diagnosisData.serviceHistory?.partsReplaced || [],
+        modifications: diagnosisData.serviceHistory?.modifications || [],
+        visual_inspection: diagnosisData.testResults?.visualInspection,
+        test_drive_notes: diagnosisData.testResults?.testDriveNotes,
         ai_analysis: diagnosisData.aiAnalysis || null,
-        status: diagnosisData.status || 'ANALYZING'
+        status: 'ANALYZING'
       }
       
       const { data, error } = await supabaseAdmin
-        .from('diagnosis_sessions')
-        .upsert(diagnosisSession, { onConflict: 'id' })
+        .from('diagnosis')
+        .upsert(diagnosisRecord, { onConflict: 'id' })
         .select('id')
         .single()
       
@@ -171,7 +145,7 @@ export class DiagnosisService {
       // Update di Supabase jika dikonfigurasi
       if (supabaseAdmin) {
         await supabaseAdmin
-          .from('diagnosis_sessions')
+          .from('diagnosis')
           .update({
             ai_analysis: aiAnalysis,
             status: 'COMPLETED'
@@ -345,7 +319,7 @@ export class DiagnosisService {
       // Hapus dari Supabase jika dikonfigurasi
       if (supabaseAdmin) {
         await supabaseAdmin
-          .from('diagnosis_sessions')
+          .from('diagnosis')
           .delete()
           .eq('id', diagnosisId)
       }
