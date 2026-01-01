@@ -213,10 +213,10 @@ export default function DiagnosisResultEnhanced({
                   <TabsTrigger 
                     key={tab.id}
                     value={tab.id}
-                    className="font-bold text-[10px] md:text-xs lg:text-sm xl:text-base text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex flex-col md:flex-row items-center justify-center gap-0.5 md:gap-1 lg:gap-2 px-0.5 md:px-1 lg:px-2 min-w-0 py-1"
+                    className="font-bold text-[9px] md:text-[10px] lg:text-xs xl:text-sm text-slate-300 hover:text-white transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-lg rounded-md flex flex-col md:flex-row items-center justify-center gap-0.5 md:gap-1 lg:gap-2 px-0.5 md:px-1 lg:px-2 min-w-0 py-1"
                   >
                     <IconComponent className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />
-                    <span className="text-[9px] md:text-[10px] lg:text-xs xl:text-sm leading-tight whitespace-nowrap overflow-hidden text-ellipsis max-w-full">{tab.label}</span>
+                    <span className="text-[8px] md:text-[9px] lg:text-[10px] xl:text-xs leading-tight whitespace-nowrap overflow-hidden text-ellipsis max-w-full">{tab.label}</span>
                   </TabsTrigger>
                 )
               })}
@@ -307,22 +307,22 @@ export default function DiagnosisResultEnhanced({
             {/* Cost Summary */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-slate-900">COST ANALYSIS</h3>
-                <DollarSign className="w-6 h-6 text-green-600" />
+                <h3 className="font-bold text-slate-900 text-sm">COST ANALYSIS</h3>
+                <DollarSign className="w-5 h-5 text-green-600" />
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-slate-600">Parts</span>
-                  <span className="font-bold text-green-600">{formatCurrency(aiAnalysis.estimatedTotalCost.parts)}</span>
+                  <span className="text-xs text-slate-600">Parts</span>
+                  <span className="font-bold text-sm text-green-600">{formatCurrency(aiAnalysis.estimatedTotalCost.parts)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-slate-600">Labor</span>
-                  <span className="font-bold text-blue-600">{formatCurrency(aiAnalysis.estimatedTotalCost.labor)}</span>
+                  <span className="text-xs text-slate-600">Labor</span>
+                  <span className="font-bold text-sm text-blue-600">{formatCurrency(aiAnalysis.estimatedTotalCost.labor)}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-slate-900">TOTAL</span>
-                  <span className="font-bold text-xl text-slate-900">{formatCurrency(aiAnalysis.estimatedTotalCost.total)}</span>
+                  <span className="font-bold text-slate-900 text-sm">TOTAL</span>
+                  <span className="font-bold text-base text-slate-900">{formatCurrency(aiAnalysis.estimatedTotalCost.total)}</span>
                 </div>
               </div>
             </div>
@@ -330,8 +330,8 @@ export default function DiagnosisResultEnhanced({
             {/* Confidence Meter */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-slate-900">AI CONFIDENCE</h3>
-                <Gauge className="w-6 h-6 text-blue-600" />
+                <h3 className="font-bold text-slate-900 text-sm">AI CONFIDENCE</h3>
+                <Gauge className="w-5 h-5 text-blue-600" />
               </div>
               <div className="space-y-3">
                 <div className="relative">
@@ -353,11 +353,11 @@ export default function DiagnosisResultEnhanced({
             {/* Complexity Rating */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-slate-900">REPAIR COMPLEXITY</h3>
-                <Shield className="w-6 h-6 text-orange-600" />
+                <h3 className="font-bold text-slate-900 text-sm">REPAIR COMPLEXITY</h3>
+                <Shield className="w-5 h-5 text-orange-600" />
               </div>
               <div className="text-center">
-                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-bold ${getComplexityColor(aiAnalysis.primaryCause.repairComplexity)}`}>
+                <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg font-bold text-sm ${getComplexityColor(aiAnalysis.primaryCause.repairComplexity)}`}>
                   {getComplexityIcon(aiAnalysis.primaryCause.repairComplexity)}
                   {aiAnalysis.primaryCause.repairComplexity}
                 </div>
