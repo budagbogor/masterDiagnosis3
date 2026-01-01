@@ -26,7 +26,8 @@ import {
   Shield,
   Gauge,
   Activity,
-  ChevronDown
+  ChevronDown,
+  Stethoscope
 } from 'lucide-react'
 
 interface DiagnosisResultProps {
@@ -160,7 +161,7 @@ export default function DiagnosisResultEnhanced({
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <Activity className="w-6 h-6 text-white" />
+                <Stethoscope className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">DIAGNOSTIC REPORT</h1>
