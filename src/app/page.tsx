@@ -10,7 +10,8 @@ import {
   Zap,
   ShieldCheck,
   Menu,
-  Database
+  Database,
+  Stethoscope
 } from 'lucide-react'
 import {
   Sheet,
@@ -205,7 +206,7 @@ export default function AutoDiagMasterAI() {
             <Card className="bg-gradient-to-br from-blue-600 to-blue-700 text-white border-0">
               <CardContent className="p-8 text-center space-y-6">
                 <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-xl mb-2">
-                  <BrainCircuit className="w-7 h-7 text-white" />
+                  <Stethoscope className="w-7 h-7 text-white" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold mb-2">AutoDiag Master AI</h1>
