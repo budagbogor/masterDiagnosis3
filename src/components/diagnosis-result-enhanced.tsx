@@ -26,8 +26,7 @@ import {
   Shield,
   Gauge,
   Activity,
-  ChevronDown,
-  Menu
+  ChevronDown
 } from 'lucide-react'
 
 interface DiagnosisResultProps {
@@ -493,19 +492,19 @@ export default function DiagnosisResultEnhanced({
             <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               {/* Procedure Header */}
               <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-bold">{procedure.title}</h2>
-                    <p className="text-slate-300 mt-1">{procedure.description}</p>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold mb-2">{procedure.title}</h2>
+                    <p className="text-slate-300 text-sm leading-relaxed">{procedure.description}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className={`px-3 py-1 rounded-full text-xs font-bold ${getComplexityColor(procedure.difficultyLevel)}`}>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 lg:flex-shrink-0">
+                    <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${getComplexityColor(procedure.difficultyLevel)}`}>
                       {getComplexityIcon(procedure.difficultyLevel)}
-                      <span className="ml-1">{procedure.difficultyLevel}</span>
+                      <span className="ml-2">{procedure.difficultyLevel}</span>
                     </div>
-                    <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">
-                      <Clock className="w-3 h-3 mr-1 inline" />
-                      {procedure.estimatedTime} MIN
+                    <div className="inline-flex items-center bg-white/20 px-4 py-2 rounded-full text-sm font-bold">
+                      <Clock className="w-4 h-4 mr-2" />
+                      <span>{procedure.estimatedTime} MIN</span>
                     </div>
                   </div>
                 </div>
