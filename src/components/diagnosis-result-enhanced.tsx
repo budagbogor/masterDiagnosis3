@@ -615,35 +615,26 @@ export default function DiagnosisResultEnhanced({
                 COST BREAKDOWN
               </h2>
               <div className="space-y-4">
-                <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-blue-900 text-lg">PARTS COST</span>
-                      <span className="text-blue-700 text-sm">Komponen & Spare Parts</span>
-                    </div>
+                <div className="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-500">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-blue-900 text-lg">PARTS COST</span>
                     <span className="font-bold text-2xl text-blue-700">
                       {formatCurrency(aiAnalysis.estimatedTotalCost.parts)}
                     </span>
                   </div>
                 </div>
-                <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-green-900 text-lg">LABOR COST</span>
-                      <span className="text-green-700 text-sm">Biaya Jasa & Tenaga Kerja</span>
-                    </div>
+                <div className="bg-green-50 p-5 rounded-lg border-l-4 border-green-500">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-green-900 text-lg">LABOR COST</span>
                     <span className="font-bold text-2xl text-green-700">
                       {formatCurrency(aiAnalysis.estimatedTotalCost.labor)}
                     </span>
                   </div>
                 </div>
                 <Separator className="my-4" />
-                <div className="bg-slate-100 p-6 rounded-lg border-l-4 border-slate-500">
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-slate-900 text-xl">TOTAL ESTIMATE</span>
-                      <span className="text-slate-700 text-sm">Total Estimasi Biaya</span>
-                    </div>
+                <div className="bg-slate-100 p-5 rounded-lg border-l-4 border-slate-500">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-slate-900 text-xl">TOTAL ESTIMATE</span>
                     <span className="font-bold text-3xl text-slate-900">
                       {formatCurrency(aiAnalysis.estimatedTotalCost.total)}
                     </span>
@@ -659,39 +650,21 @@ export default function DiagnosisResultEnhanced({
                 COST BY DIAGNOSIS
               </h2>
               <div className="space-y-4">
-                <div className="bg-red-50 p-6 rounded-lg border-l-4 border-red-500">
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <h3 className="font-bold text-red-900 text-lg">{aiAnalysis.primaryCause.component}</h3>
-                      <p className="text-red-700 text-sm">PRIMARY FAULT - Penyebab Utama</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-xl text-red-800">
-                        {formatCurrency(aiAnalysis.primaryCause.estimatedCost.min)}
-                      </p>
-                      <p className="text-red-600 text-sm">
-                        - {formatCurrency(aiAnalysis.primaryCause.estimatedCost.max)}
-                      </p>
-                    </div>
-                  </div>
+                <div className="bg-red-50 p-5 rounded-lg border-l-4 border-red-500">
+                  <h3 className="font-bold text-red-900 text-lg mb-1">{aiAnalysis.primaryCause.component}</h3>
+                  <p className="text-red-700 text-sm mb-3">PRIMARY FAULT</p>
+                  <p className="font-bold text-xl text-red-800">
+                    {formatCurrency(aiAnalysis.primaryCause.estimatedCost.min)} - {formatCurrency(aiAnalysis.primaryCause.estimatedCost.max)}
+                  </p>
                 </div>
                 
                 {aiAnalysis.secondaryCauses.slice(0, 3).map((cause: any, index: number) => (
-                  <div key={index} className="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-300">
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <h3 className="font-bold text-orange-900 text-lg">{cause.component}</h3>
-                        <p className="text-orange-700 text-sm">PROBABILITY {Math.round(cause.probability * 100)}% - Kemungkinan Alternatif</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-lg text-orange-800">
-                          {formatCurrency(cause.estimatedCost.min)}
-                        </p>
-                        <p className="text-orange-600 text-sm">
-                          - {formatCurrency(cause.estimatedCost.max)}
-                        </p>
-                      </div>
-                    </div>
+                  <div key={index} className="bg-orange-50 p-5 rounded-lg border-l-4 border-orange-300">
+                    <h3 className="font-bold text-orange-900 text-lg mb-1">{cause.component}</h3>
+                    <p className="text-orange-700 text-sm mb-3">PROBABILITY {Math.round(cause.probability * 100)}%</p>
+                    <p className="font-bold text-lg text-orange-800">
+                      {formatCurrency(cause.estimatedCost.min)} - {formatCurrency(cause.estimatedCost.max)}
+                    </p>
                   </div>
                 ))}
               </div>
