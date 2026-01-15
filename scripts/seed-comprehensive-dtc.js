@@ -23,8 +23,15 @@ try {
 }
 
 // Konfigurasi Supabase
-const supabaseUrl = 'https://tlyiqancvcqiaawlkzah.supabase.co';
-const supabaseKey = 'sb_publishable_LFsYetkOENQEI0BVkGIjRA_uHgnpe5S';
+// Konfigurasi Supabase
+require('dotenv').config(); // Load environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Missing Supabase credentials in .env');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -66,27 +73,27 @@ async function seedDTCCodes() {
 
     for (let i = 0; i < dtcCodesForSupabase.length; i += batchSize) {
       const batch = dtcCodesForSupabase.slice(i, i + batchSize);
-      
-      console.log(`📤 Uploading batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(dtcCodesForSupabase.length/batchSize)} (${batch.length} records)...`);
-      
+
+      console.log(`📤 Uploading batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(dtcCodesForSupabase.length / batchSize)} (${batch.length} records)...`);
+
       const { error } = await supabase
         .from('dtc_codes')
         .upsert(batch, { onConflict: 'code' });
 
       if (error) {
-        console.error(`❌ Error uploading batch ${Math.floor(i/batchSize) + 1}:`, error);
+        console.error(`❌ Error uploading batch ${Math.floor(i / batchSize) + 1}:`, error);
         throw error;
       }
 
       uploadedCount += batch.length;
       console.log(`✅ Uploaded ${uploadedCount}/${dtcCodesForSupabase.length} records`);
-      
+
       // Delay kecil untuk menghindari rate limiting
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     console.log('✅ Berhasil upload semua data DTC ke Supabase!');
-    
+
     // Verifikasi data
     const { data: verifyData, error: verifyError } = await supabase
       .from('dtc_codes')
@@ -121,7 +128,7 @@ async function seedDTCCodes() {
       Object.entries(systemStats).forEach(([system, count]) => {
         console.log(`  ${system}: ${count} kode`);
       });
-      
+
       console.log('Berdasarkan severity:');
       Object.entries(severityStats).forEach(([severity, count]) => {
         console.log(`  ${severity}: ${count} kode`);
