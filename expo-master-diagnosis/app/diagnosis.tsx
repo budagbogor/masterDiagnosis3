@@ -155,7 +155,7 @@ export default function DiagnosisScreen() {
         <Text style={styles.label}>Merek Kendaraan</Text>
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={vehicle.brand}
+            selectedValue={vehicle.brand || ""}
             onValueChange={(value: string) => setVehicle({...vehicle, brand: value, model: ''})}
             style={styles.picker}
           >
@@ -172,7 +172,7 @@ export default function DiagnosisScreen() {
           <Text style={styles.label}>Model Kendaraan</Text>
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={vehicle.model}
+              selectedValue={vehicle.model || ""}
               onValueChange={(value: string) => setVehicle({...vehicle, model: value})}
               style={styles.picker}
             >
@@ -223,7 +223,7 @@ export default function DiagnosisScreen() {
         <TextInput
           style={styles.textInput}
           placeholder="Contoh: P0171, P0300"
-          value={dtcCodes}
+          value={dtcCodes || ""}
           onChangeText={setDtcCodes}
         />
         <Text style={styles.helperText}>

@@ -203,7 +203,7 @@ export default function DTCLibraryScreen() {
           <TextInput
             style={styles.searchInput}
             placeholder="Cari kode DTC atau deskripsi..."
-            value={searchTerm}
+            value={searchTerm || ""}
             onChangeText={setSearchTerm}
           />
         </View>
