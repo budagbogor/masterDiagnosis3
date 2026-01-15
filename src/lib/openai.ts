@@ -1,7 +1,7 @@
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || 'dummy',
   baseURL: process.env.OPENAI_BASE_URL || 'https://openrouter.ai/api/v1',
 })
 
@@ -223,7 +223,7 @@ Pastikan estimasi waktu realistis berdasarkan kompleksitas pekerjaan.
   private getPriceReference(brand: string, year: string): string {
     const currentYear = new Date().getFullYear()
     const vehicleAge = currentYear - parseInt(year)
-    
+
     const priceData: { [key: string]: any } = {
       'Toyota': {
         sensors: {
@@ -330,7 +330,7 @@ Pastikan estimasi waktu realistis berdasarkan kompleksitas pekerjaan.
     }
 
     const brandData = priceData[brand] || priceData['Toyota'] // fallback to Toyota
-    
+
     return `
 - Sensor MAF: Rp ${brandData.sensors.maf}
 - Sensor O2: Rp ${brandData.sensors.o2}
@@ -353,7 +353,7 @@ Catatan: Harga parts OEM lebih mahal 20-40% dari aftermarket berkualitas.
       // Check if OpenAI API key is available
       if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === '') {
         console.log('⚠️ OpenAI API key tidak ditemukan, menggunakan mode mock')
-        
+
         // Show popup notification about AI connection issue
         if (typeof window !== 'undefined') {
           // This will be handled by the frontend component
@@ -361,7 +361,7 @@ Catatan: Harga parts OEM lebih mahal 20-40% dari aftermarket berkualitas.
             detail: { message: 'Koneksi ke AI terputus, menggunakan data simulasi' }
           }))
         }
-        
+
         return this.getMockDiagnosisResult(data)
       }
 
@@ -420,7 +420,7 @@ Berikan diagnosis dalam format JSON yang sudah ditentukan. HANYA JSON, tanpa tek
       })
 
       console.log('AI Response received:', completion.choices[0]?.message?.content ? 'Yes' : 'No')
-      
+
       let response = completion.choices[0]?.message?.content
       if (!response) {
         console.log('No response content from AI')
@@ -429,11 +429,11 @@ Berikan diagnosis dalam format JSON yang sudah ditentukan. HANYA JSON, tanpa tek
 
       // Clean up response - remove any non-JSON text
       response = response.trim()
-      
+
       // Find JSON start and end
       const jsonStart = response.indexOf('{')
       const jsonEnd = response.lastIndexOf('}')
-      
+
       if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
         response = response.substring(jsonStart, jsonEnd + 1)
       }
@@ -443,14 +443,14 @@ Berikan diagnosis dalam format JSON yang sudah ditentukan. HANYA JSON, tanpa tek
       // Parse JSON response
       console.log('Parsing AI response...')
       let result: DiagnosisResult
-      
+
       try {
         result = JSON.parse(response) as DiagnosisResult
       } catch (parseError) {
         console.log('Failed to parse JSON, response was:', response.substring(0, 500))
         throw new Error('Response AI tidak dalam format JSON yang valid')
       }
-      
+
       // Validate required fields
       if (!result.primaryCause || !result.confidence || !result.theoryExplanation) {
         throw new Error('Response AI tidak lengkap')
@@ -468,12 +468,12 @@ Berikan diagnosis dalam format JSON yang sudah ditentukan. HANYA JSON, tanpa tek
     // Generate realistic diagnosis based on vehicle data and symptoms
     const vehicleAge = new Date().getFullYear() - parseInt(data.vehicle.year)
     const isHighMileage = data.vehicle.mileage > 100000
-    
+
     // Determine primary cause based on DTC codes and symptoms
     let primaryComponent = "Sensor MAF (Mass Air Flow)"
     let primaryDescription = "Sensor MAF kotor atau rusak menyebabkan pembacaan aliran udara tidak akurat"
     let estimatedCost = { min: 150000, max: 500000 }
-    
+
     // Analyze DTC codes for more accurate diagnosis
     if (data.dtcCodes.length > 0) {
       const dtcCode = data.dtcCodes[0]
@@ -491,17 +491,17 @@ Berikan diagnosis dalam format JSON yang sudah ditentukan. HANYA JSON, tanpa tek
         estimatedCost = { min: 2000000, max: 8000000 }
       }
     }
-    
+
     // Adjust pricing based on vehicle brand and age
     const priceMultiplier = this.getPriceMultiplier(data.vehicle.brand, vehicleAge)
     estimatedCost.min = Math.round(estimatedCost.min * priceMultiplier)
     estimatedCost.max = Math.round(estimatedCost.max * priceMultiplier)
-    
+
     // Calculate labor cost based on complexity
     const laborHours = 2.5
     const laborRate = this.getLaborRate(data.vehicle.brand, vehicleAge)
     const laborCost = laborHours * laborRate
-    
+
     return {
       primaryCause: {
         component: primaryComponent,
@@ -699,10 +699,10 @@ Kondisi ini umum terjadi pada kendaraan ${data.vehicle.brand} dengan sistem EFI,
       'Mazda': 1.05,
       'Isuzu': 1.0
     }
-    
+
     const baseMultiplier = brandMultipliers[brand] || 1.0
     const ageMultiplier = vehicleAge > 10 ? 0.8 : vehicleAge > 5 ? 0.9 : 1.0
-    
+
     return baseMultiplier * ageMultiplier
   }
 
@@ -717,7 +717,7 @@ Kondisi ini umum terjadi pada kendaraan ${data.vehicle.brand} dengan sistem EFI,
       'Mazda': 210000,
       'Isuzu': 190000
     }
-    
+
     const baseRate = baseLaborRates[brand] || 200000
     return vehicleAge > 10 ? baseRate * 0.8 : baseRate
   }
